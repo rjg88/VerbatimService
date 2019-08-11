@@ -75,6 +75,28 @@ namespace VerbatimService
             return Deck;
         }
 
+        public List<Deck> GetAllDecks()
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            List<Deck> Decks = new List<Deck>();
+            SQLiteCommand.CommandText = @"SELECT Name, Description, Author, IdentifiyngToken
+                        FROM VerbatimDeck";
+            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
+            {
+                while (SQLiteDataReader.Read())
+                {
+                    Deck Deck = new Deck();
+                    Deck.Name = SQLiteDataReader.GetString(0);
+                    Deck.Description = SQLiteDataReader.GetString(1);
+                    Deck.Author = SQLiteDataReader.GetString(2);
+                    Deck.IdentifiyngToken = SQLiteDataReader.GetString(3);
+                    Decks.Add(Deck);
+                }
+            }
+            return Decks;
+        }
+
         public List<Card> GetDeckCards(string DeckId, string Filter)
         {
             SQLiteCommand = new SQLiteCommand(Connection);
@@ -137,9 +159,10 @@ namespace VerbatimService
         {
             SQLiteCommand = new SQLiteCommand(Connection);
 
-            SQLiteCommand.CommandText = @"INSERT INTO VerbatimCard (Title, Description, Category, PointValue)
-                        VALUES (:Title,:Description,:Category,:PointValue)";
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimCard (VerbatimDeckId, Title, Description, Category, PointValue)
+                        VALUES (:VerbatimDeckId,:Title,:Description,:Category,:PointValue)";
 
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Card.VerbatimDeckId;
             SQLiteCommand.Parameters.Add("Title", DbType.String).Value = Card.Title;
             SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Card.Description;
             SQLiteCommand.Parameters.Add("Category", DbType.String).Value = Card.Category;
@@ -147,7 +170,24 @@ namespace VerbatimService
 
             SQLiteCommand.ExecuteNonQuery();
         }
+        public int InsertDeck(Deck Deck)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
 
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimDeck (Name, Description, Author, IdentifiyngToken, Password)
+                        VALUES (:Name,:Description,:Author,:IdentifiyngToken,:Password)";
+
+            SQLiteCommand.Parameters.Add("Name", DbType.String).Value = Deck.Name;
+            SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Deck.Description;
+            SQLiteCommand.Parameters.Add("Author", DbType.String).Value = Deck.Author;
+            SQLiteCommand.Parameters.Add("IdentifiyngToken", DbType.String).Value = Deck.IdentifiyngToken;
+            SQLiteCommand.Parameters.Add("Password", DbType.String).Value = Deck.Password;
+
+            SQLiteCommand.ExecuteNonQuery();
+
+            SQLiteCommand.CommandText = "select last_insert_rowid()";
+            return Int32.Parse(SQLiteCommand.ExecuteScalar().ToString());
+        }
         public void DeleteCard(Card Card)
         {
             SQLiteCommand = new SQLiteCommand(Connection);
@@ -161,6 +201,35 @@ namespace VerbatimService
                                            WHERE  VerbatimCardId = :VerbatimCardId";
             SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = Card.VerbatimCardId;
             SQLiteCommand.ExecuteNonQuery();
+        }
+
+        public int GetDeckIdByToken(string IdentifiyngToken)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeckId FROM VerbatimDeck
+                                           WHERE IdentifiyngToken  = :IdentifiyngToken";
+            SQLiteCommand.Parameters.Add("IdentifiyngToken", DbType.String).Value = IdentifiyngToken;
+            
+            return Int32.Parse(SQLiteCommand.ExecuteScalar().ToString());
+        }
+
+        public List<string> GetDeckCategories(string DeckId)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"SELECT DISTINCT Category FROM VerbatimCard
+                                           WHERE VerbatimDeckId  = :VerbatimDeckId";
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = DeckId;
+            List<string> Categories = new List<string>();
+            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
+            {
+                while (SQLiteDataReader.Read())
+                {
+                    Categories.Add(SQLiteDataReader.GetString(0));
+                }
+            }
+            return Categories;
         }
     }
 }

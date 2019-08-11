@@ -12,6 +12,8 @@ namespace VerbatimService
         [DataMember]
         public int VerbatimCardId { get; set; }
         [DataMember]
+        public int VerbatimDeckId { get; set; }
+        [DataMember]
         public string Title { get; set; }
         [DataMember]
         public string Description { get; set; }

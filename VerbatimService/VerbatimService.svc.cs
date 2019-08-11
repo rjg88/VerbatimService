@@ -88,7 +88,7 @@ namespace VerbatimService
 
         //}
 
-        public SpawnedDeck GetDeckWithSteamIds(string DeckSize, string SteamIDs)
+        public SpawnedDeck GetDeckWithSteamIdsAndToken(string DeckSize, string Token, List<string> SteamIDs)
         {
             Initialize();
             SpawnedDeck Deck = new SpawnedDeck();
@@ -99,10 +99,16 @@ namespace VerbatimService
                 if (System.Web.HttpContext.Current != null)
                     Host = System.Web.HttpContext.Current.Request.Url.Host;
 
-                List<string> ListSteamIDs = SteamIDs.Split(',').ToList();
-                Deck.ImageFile = Host + "/Verbatim/Sheets/Original/" + ImageProcessing.CreateDeck(Int32.Parse(DeckSize), ListSteamIDs);
-                Deck.Cards = ImageProcessing.CardObjects;
-
+                if (string.IsNullOrEmpty(Token))
+                {
+                    Deck.ImageFile = Host + "/Verbatim/Sheets/Original/" + ImageProcessing.CreateDeck(Int32.Parse(DeckSize), SteamIDs, "");
+                    Deck.Cards = ImageProcessing.CardObjects;
+                }
+                else
+                {
+                    Deck.ImageFile = Host + "/Verbatim/Sheets/" + Token + "/" + ImageProcessing.CreateDeck(Int32.Parse(DeckSize), SteamIDs, Token);
+                    Deck.Cards = ImageProcessing.CardObjects;
+                }
                 return Deck;
             }
             catch (Exception E)
@@ -124,6 +130,30 @@ namespace VerbatimService
         {
             Initialize();
             Persistence.DeleteCard(Card);
+        }
+
+        public int InsertDeck(Deck Deck)
+        {
+            Initialize();
+            return Persistence.InsertDeck(Deck);
+        }
+
+        public List<Deck> GetAllDecks()
+        {
+            Initialize();
+            return Persistence.GetAllDecks();
+        }
+
+        public SpawnedDeck GetDeckWithSteamIds(string DeckSize, string SteamIDs)
+        {
+            List<string> ListSteamIDs = SteamIDs.Split(',').ToList();
+            return GetDeckWithSteamIdsAndToken(DeckSize, "", ListSteamIDs);
+        }
+
+        public List<string> GetDeckCategories(string DeckId)
+        {
+            Initialize();
+            return Persistence.GetDeckCategories(DeckId);
         }
     }
 }

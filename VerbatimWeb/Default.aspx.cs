@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.ModelBinding;
 using System.Web.UI;
@@ -17,10 +18,6 @@ namespace VerbatimWeb
         protected void Page_Load(object sender, EventArgs e)
         {
 
-        }
-        protected void ButtonSearch_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("DeckSearchResults.aspx?query=" + SearchInputBox.Text, false);
         }
 
     }

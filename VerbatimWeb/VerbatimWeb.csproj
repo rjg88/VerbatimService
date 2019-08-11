@@ -110,9 +110,12 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="CreateDeck.aspx" />
     <Content Include="DeckCardsView.aspx" />
+    <Content Include="DeckDetails.aspx" />
     <Content Include="DeckSearchResults.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="ExcelUploader.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -153,6 +156,7 @@
     <Content Include="Scripts\WebForms\WebForms.js" />
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
+    <Content Include="SearchDecks.aspx" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
@@ -162,12 +166,26 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="CreateDeck.aspx.cs">
+      <DependentUpon>CreateDeck.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CreateDeck.aspx.designer.cs">
+      <DependentUpon>CreateDeck.aspx</DependentUpon>
+    </Compile>
     <Compile Include="DeckCardsView.aspx.cs">
       <DependentUpon>DeckCardsView.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="DeckCardsView.aspx.designer.cs">
       <DependentUpon>DeckCardsView.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DeckDetails.aspx.cs">
+      <DependentUpon>DeckDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DeckDetails.aspx.designer.cs">
+      <DependentUpon>DeckDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="DeckSearchResults.aspx.cs">
       <DependentUpon>DeckSearchResults.aspx</DependentUpon>
@@ -183,10 +201,24 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ExcelUploader.aspx.cs">
+      <DependentUpon>ExcelUploader.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExcelUploader.aspx.designer.cs">
+      <DependentUpon>ExcelUploader.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SearchDecks.aspx.cs">
+      <DependentUpon>SearchDecks.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SearchDecks.aspx.designer.cs">
+      <DependentUpon>SearchDecks.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

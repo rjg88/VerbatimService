@@ -40,39 +40,39 @@ namespace VerbatimWeb {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl NoResultsFoundAlert;
         
         /// <summary>
-        /// DeckSearchResultsFormView control.
+        /// DeckResultsGridView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FormView DeckSearchResultsFormView;
+        protected global::System.Web.UI.WebControls.GridView DeckResultsGridView;
         
         /// <summary>
-        /// PasswordSection control.
+        /// SearchSection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl PasswordSection;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SearchSection;
         
         /// <summary>
-        /// PasswordBox control.
+        /// SearchInputBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PasswordBox;
+        protected global::System.Web.UI.WebControls.TextBox SearchInputBox;
         
         /// <summary>
-        /// ButtonViewCards control.
+        /// ButtonSearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ButtonViewCards;
+        protected global::System.Web.UI.WebControls.Button ButtonSearch;
     }
 }

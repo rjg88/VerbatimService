@@ -30,9 +30,11 @@ namespace VerbatimService
         private static readonly int CardHeight = 1001;
 
         public List<Card> CardObjects = new List<Card>();
+        public Persistence Persistence = new Persistence();
+        private int DeckId = -1;
 
 
-        public string CreateDeck(int DeckSize, List<string> SteamIds)
+        public string CreateDeck(int DeckSize, List<string> SteamIds, string Token)
         {
             Initialize(); 
 
@@ -40,14 +42,33 @@ namespace VerbatimService
 
             List<int> CardCounts = FixDistribution(Distribution, DeckSize);
 
-            GenerateCards(CardCounts, SteamIds);
+            if (string.IsNullOrEmpty(Token))
+                DeckId = 1;
+            else
+                DeckId = Persistence.GetDeckIdByToken(Token);
+
+            if (DeckId < 1)
+                return "";
+
+
+            GenerateCards(CardCounts, SteamIds, DeckId);
 
             foreach (Card Card in CardObjects)
                 CardImages.Add(GenerateImage(Card));
 
             Bitmap SheetBitMap = CreateSheetFromCards();
             string FileName = DateTime.Now.ToString("MM-dd-yyyy-HH：mm：ss") + ".png";
-            string CurrentDirectory = DriveLetter +  @":\inetpub\wwwroot\Verbatim\Sheets\Original\";
+            string CurrentDirectory = "";
+            if (DeckId == 1)
+                CurrentDirectory = DriveLetter + @":\inetpub\wwwroot\Verbatim\Sheets\Original\";
+            else
+            {
+                if (!Directory.Exists(DriveLetter + @":\inetpub\wwwroot\Verbatim\Sheets\" + Token + "\\"))
+                    Directory.CreateDirectory(DriveLetter + @":\inetpub\wwwroot\Verbatim\Sheets\" + Token + "\\");
+                    
+                CurrentDirectory = DriveLetter + @":\inetpub\wwwroot\Verbatim\Sheets\" + Token + "\\";
+            }
+
             string FullPictureFileName = CurrentDirectory + "\\" + FileName;
 
             SheetBitMap.Save(FullPictureFileName);
@@ -55,7 +76,7 @@ namespace VerbatimService
             return FileName;
         }
 
-        private void GenerateCards(List<int> CardCounts, List<string> SteamIDs)
+        private void GenerateCards(List<int> CardCounts, List<string> SteamIDs, int DeckId)
         {
             int count = 1;
 
@@ -83,7 +104,7 @@ namespace VerbatimService
 								LEFT JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
 								AND VerbatimCardPlayHistory.SteamID IN({0})
-								WHERE VerbatimDeckId = 1 
+								WHERE VerbatimDeckId = {3}
 								AND PointValue = {1}   
 								AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
 								UNION
@@ -91,7 +112,7 @@ namespace VerbatimService
 								FROM VerbatimCard 
 								INNER JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
-								WHERE VerbatimDeckId = 1 
+								WHERE VerbatimDeckId = {3}
 								AND VerbatimCardPlayHistory.SteamID IN({0})
 								AND PointValue = {1}      
 								GROUP BY VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue
@@ -100,7 +121,7 @@ namespace VerbatimService
 
             foreach (int CardCount in CardCounts)
             {
-                string SelectSQL = String.Format(TemplateSQL, SteamIDList, count, CardCount);
+                string SelectSQL = String.Format(TemplateSQL, SteamIDList, count, CardCount, DeckId);
                 //string sql = "SELECT VerbatimCardId, Title, Description, Category, PointValue FROM VerbatimCard WHERE VerbatimDeckId = 1 AND PointValue = " + count + " ORDER BY RANDOM() LIMIT " + CardCount;
                 SQLiteCommand Command = new SQLiteCommand(SelectSQL, Connection);
                 using (SQLiteDataReader SQLiteDataReader = Command.ExecuteReader())
@@ -187,6 +208,8 @@ namespace VerbatimService
             CardObjects = new List<Card>();
 
             UnixTimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+            Persistence.Connection = Connection;
         }
 
         private static Bitmap GenerateImage(Card Card)

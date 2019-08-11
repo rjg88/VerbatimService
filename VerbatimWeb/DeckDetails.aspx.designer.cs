@@ -10,51 +10,69 @@
 namespace VerbatimWeb {
     
     
-    public partial class DeckCardsView {
+    public partial class DeckDetails {
         
         /// <summary>
-        /// HiddenDeckId control.
+        /// Name control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField HiddenDeckId;
+        protected global::System.Web.UI.WebControls.Label Name;
         
         /// <summary>
-        /// FilterInputBox control.
+        /// Description control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox FilterInputBox;
+        protected global::System.Web.UI.WebControls.Label Description;
         
         /// <summary>
-        /// ButtonFilter control.
+        /// Token control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ButtonFilter;
+        protected global::System.Web.UI.WebControls.Label Token;
         
         /// <summary>
-        /// DeckCardsGridView control.
+        /// Author control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView DeckCardsGridView;
+        protected global::System.Web.UI.WebControls.Label Author;
         
         /// <summary>
-        /// InsertCardFormView control.
+        /// PasswordBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FormView InsertCardFormView;
+        protected global::System.Web.UI.WebControls.TextBox PasswordBox;
+        
+        /// <summary>
+        /// ButtonViewCards control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonViewCards;
+        
+        /// <summary>
+        /// ButtonExcelUpload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonExcelUpload;
     }
 }

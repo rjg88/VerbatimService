@@ -19,20 +19,28 @@ namespace VerbatimWeb
         {
 
         }
-        protected void ButtonViewCards_Click(object sender, EventArgs e)
+        protected void DeckResultsGridView_DataBound(object sender, GridViewRowEventArgs e)
         {
-            // check Password
-            //DeckId = ((Deck)DeckSearchResultsFormView.DataItem).VerbatimDeckId.ToString();
-
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + HiddenDeckId.Value));
-
-            if (Deck.Password == PasswordBox.Text)
-                Response.Redirect("DeckCardsView.aspx?DeckId=" + HiddenDeckId.Value, false);
-            else
-                return;
+            return;
 
         }
-        public List<Deck> SearchDecks([QueryString("query")] string query)
+        public void ViewDetails(int VerbatimDeckId)
+        {
+            Response.Redirect("DeckDetails.aspx?DeckID=" + VerbatimDeckId);
+        }
+
+        protected void DeckResultsGridView_RowCreated(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.Cells.Count > 1)
+            {
+                // hides the Identity columns
+                e.Row.Cells[1].Visible = false;
+                e.Row.Cells[5].Visible = false;
+                e.Row.Cells[6].Visible = false;
+            }
+        }
+
+        public IQueryable<Deck> LoadDeckCards([QueryString("query")] string query)
         {
             string QueryURL = "http://platypuseggs.com/VerbatimService.svc/SearchForDeck/" + query;
 
@@ -42,8 +50,9 @@ namespace VerbatimWeb
                 Decks = JsonConvert.DeserializeObject<List<Deck>>(MakeGETRequest(QueryURL));
             if(Decks.Count == 0)
             {
+                SearchSection.Visible = true;
+                DeckResultsGridView.Visible = false;
                 NoResultsFoundAlert.InnerText = "No Results Found";
-                PasswordSection.Visible = false;
             }
             else
             {
@@ -51,7 +60,7 @@ namespace VerbatimWeb
             }
             if(Decks.Count > 0)
                 HiddenDeckId.Value = Decks[0].VerbatimDeckId.ToString();
-            return Decks;
+            return Decks.AsQueryable();
         }
         private string MakeGETRequest(string uri)
         {
@@ -65,6 +74,10 @@ namespace VerbatimWeb
             {
                 return reader.ReadToEnd();
             }
+        }
+        protected void ButtonSearch_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("DeckSearchResults.aspx?query=" + SearchInputBox.Text, false);
         }
     }
 }
