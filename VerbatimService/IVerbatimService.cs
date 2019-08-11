@@ -21,7 +21,7 @@ namespace VerbatimService
         [OperationContract]
         [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "GetDeckWithSteamIds/{DeckSize}")]
-        SpawnedDeck SpawnPlayDeck(string DeckSize, string SteamIDs);
+        SpawnedDeck GetDeckWithSteamIds(string DeckSize, string SteamIDs);
 
 
 
@@ -49,6 +49,16 @@ namespace VerbatimService
         [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "EditCard")]
         void EditCard(Card Card);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
+    BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "InsertCard")]
+        void InsertCard(Card Card);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
+    BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "DeleteCard")]
+        void DeleteCard(Card Card);
 
     }
 

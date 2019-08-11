@@ -43,9 +43,10 @@
         </ItemTemplate>
 								
     </asp:FormView>
-							<asp:Label runat="server" Text="Password:" Font-Size="Medium"></asp:Label>
-								<asp:textbox ID="PasswordBox" runat="server"></asp:textbox>
-								<asp:Button class="btn btn-info" type="button" ID="ButtonViewCards" runat="server" onclick="ButtonViewCards_Click" Text="View Cards" />  
-
+	<div runat="server" ID="PasswordSection">
+		<asp:Label runat="server" Text="Password:" Font-Size="Medium"></asp:Label>
+		<asp:textbox ID="PasswordBox" runat="server"></asp:textbox>
+		<asp:Button class="btn btn-info" type="button" ID="ButtonViewCards" runat="server" onclick="ButtonViewCards_Click" Text="View Cards" />  
+	</div>
 </asp:Content>
 

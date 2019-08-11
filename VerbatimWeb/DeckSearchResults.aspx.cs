@@ -43,6 +43,7 @@ namespace VerbatimWeb
             if(Decks.Count == 0)
             {
                 NoResultsFoundAlert.InnerText = "No Results Found";
+                PasswordSection.Visible = false;
             }
             else
             {

@@ -88,7 +88,7 @@ namespace VerbatimService
 
         //}
 
-        public SpawnedDeck SpawnPlayDeck(string DeckSize, string SteamIDs)
+        public SpawnedDeck GetDeckWithSteamIds(string DeckSize, string SteamIDs)
         {
             Initialize();
             SpawnedDeck Deck = new SpawnedDeck();
@@ -112,6 +112,18 @@ namespace VerbatimService
             }
 
 
+        }
+
+        public void InsertCard(Card Card)
+        {
+            Initialize();
+            Persistence.InsertCard(Card);
+        }
+
+        public void DeleteCard(Card Card)
+        {
+            Initialize();
+            Persistence.DeleteCard(Card);
         }
     }
 }

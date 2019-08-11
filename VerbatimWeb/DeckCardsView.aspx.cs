@@ -22,7 +22,10 @@ namespace VerbatimWeb
         protected void ButtonFilter_Click(object sender, EventArgs e)
         {
             Uri uri = HttpContext.Current.Request.Url;
-            Response.Redirect(uri.PathAndQuery + "&Filter=" + FilterInputBox.Text, false);
+            if(uri.PathAndQuery.Contains("&"))
+                Response.Redirect(uri.PathAndQuery.Substring(0, uri.PathAndQuery.IndexOf("&")) + "&Filter=" + FilterInputBox.Text, false);
+            else
+                Response.Redirect(uri.PathAndQuery + "&Filter=" + FilterInputBox.Text, false);
         }
         public IQueryable<Card> LoadDeckCards([QueryString("DeckId")] string DeckId, [QueryString("Filter")]string Filter)
         {
@@ -63,29 +66,41 @@ namespace VerbatimWeb
         }
         public void DeleteCard(Card Card)
         {
+            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/DeleteCard";
 
-            //string QueryURL = "http://platypuseggs.com/VerbatimService.svc/DeleteCard";
-
-            //using (var client = new System.Net.WebClient())
-            //{
-            //    client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
-            //}
+            using (var client = new System.Net.WebClient())
+            {
+                client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
+            }
         }
-        public void InsertCard(Card Card)
+        public void InsertCard(string Title, string Description, string Category, int PointValue)
         {
+            Card Card = new Card();
+            Card.Title = Title;
+            Card.Description = Description;
+            Card.Category = Category;
+            Card.PointValue = PointValue;
 
-            //string QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
+            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
 
-            //using (var client = new System.Net.WebClient())
-            //{
-            //    client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
-            //}
+            using (var client = new System.Net.WebClient())
+            {
+                client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
+            }
         }
         protected void DeckCardsGridView_RowCreated(object sender, GridViewRowEventArgs e)
         {
             if(e.Row.Cells.Count>1)
-                e.Row.Cells[2].Visible = false; // hides the first column
+                e.Row.Cells[2].Visible = false; // hides the Identity column
         }
+        protected void DeckCardsGridView_DataBound(object sender, GridViewRowEventArgs e)
+        {
+            if ((e.Row.RowState & DataControlRowState.Edit) > 0)
+            {
+                ((TextBox)e.Row.Cells[4].Controls[0]).TextMode = TextBoxMode.MultiLine;
+                ((TextBox)e.Row.Cells[4].Controls[0]).Rows = 10;
+            }
 
+        }
     }
 }

@@ -133,5 +133,34 @@ namespace VerbatimService
             }
             return FoundDecks;
         }
+        public void InsertCard(Card Card)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimCard (Title, Description, Category, PointValue)
+                        VALUES (:Title,:Description,:Category,:PointValue)";
+
+            SQLiteCommand.Parameters.Add("Title", DbType.String).Value = Card.Title;
+            SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Card.Description;
+            SQLiteCommand.Parameters.Add("Category", DbType.String).Value = Card.Category;
+            SQLiteCommand.Parameters.Add("PointValue", DbType.String).Value = Card.PointValue;
+
+            SQLiteCommand.ExecuteNonQuery();
+        }
+
+        public void DeleteCard(Card Card)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"DELETE FROM VerbatimCardPlayHistory
+                                           WHERE  VerbatimCardId = :VerbatimCardId";
+            SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = Card.VerbatimCardId;
+            SQLiteCommand.ExecuteNonQuery();
+
+            SQLiteCommand.CommandText = @"DELETE FROM VerbatimCard
+                                           WHERE  VerbatimCardId = :VerbatimCardId";
+            SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = Card.VerbatimCardId;
+            SQLiteCommand.ExecuteNonQuery();
+        }
     }
 }
