@@ -21,6 +21,18 @@ namespace VerbatimService
         public string IdentifiyngToken { get; set; }
         [DataMember]
         public string Password { get; set; }
+        [DataMember]
+        public bool UseStandardDistribution { get; set; }
 
+        [DataMember]
+        public int TotalCards{ get; set; }
+        [DataMember]
+        public int FourPointTotalCards { get; set; }
+        [DataMember]
+        public int ThreePointTotalCards { get; set; }
+        [DataMember]
+        public int TwoPointTotalCards { get; set; }
+        [DataMember]
+        public int OnePointTotalCards { get; set; }
     }
 }

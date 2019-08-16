@@ -49,6 +49,33 @@ namespace VerbatimWeb {
         protected global::System.Web.UI.WebControls.Label Author;
         
         /// <summary>
+        /// Distribution control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Distribution;
+        
+        /// <summary>
+        /// TotalCards control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label TotalCards;
+        
+        /// <summary>
+        /// Chart1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.DataVisualization.Charting.Chart Chart1;
+        
+        /// <summary>
         /// PasswordBox control.
         /// </summary>
         /// <remarks>
@@ -67,12 +94,12 @@ namespace VerbatimWeb {
         protected global::System.Web.UI.WebControls.Button ButtonViewCards;
         
         /// <summary>
-        /// ButtonExcelUpload control.
+        /// ButtonExcelClick control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ButtonExcelUpload;
+        protected global::System.Web.UI.WebControls.Button ButtonExcelClick;
     }
 }

@@ -17,7 +17,8 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Application["DeckId"] == null || string.IsNullOrEmpty(Application["DeckId"].ToString()))
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 Response.Redirect("Default.aspx");
             //DeckCardsGridView.DataBind();
             
@@ -25,8 +26,8 @@ namespace VerbatimWeb
 
             if (DropDownCategory.Items.Count < 2)
             {
-                string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCategories/" + Application["DeckId"];
-                List<string> Categories = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(MakeGETRequest(QueryURL));
+                string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCategories/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+                List<string> Categories = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(Utilities.MakeGETRequest(QueryURL));
 
                 foreach (string Category in Categories)
                     DropDownCategory.Items.Add(Category);
@@ -35,8 +36,9 @@ namespace VerbatimWeb
         }
         protected void ButtonFilter_Click(object sender, EventArgs e)
         {
-            Uri uri = HttpContext.Current.Request.Url;
-            Response.Redirect(uri.PathAndQuery + "?Filter=" + FilterInputBox.Text, false);
+            string QueryURL = "DeckCardsView.aspx?filter=" + FilterInputBox.Text;
+
+            Response.Redirect(QueryURL, false);
         }
         protected void DropDownListCategory_Changed(object sender, EventArgs e)
         {
@@ -54,38 +56,28 @@ namespace VerbatimWeb
         }
         public IQueryable<Card> LoadDeckCards([QueryString("DeckPassword")] string DeckPassword, [QueryString("Filter")]string Filter)
         {
-            if (Application["DeckId"] == null || string.IsNullOrEmpty(Application["DeckId"].ToString()))
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 return null;
-            string DeckId = Application["DeckId"].ToString();
+
+            string DeckId = DeckIdCookie.ToString();
             if (Filter == null)
                 Filter = "";
             string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCards/" + DeckId + "?filter=" + Filter;
 
-            List<Card> Decks = null;
+            List<Card> Cards = null;
 
             if (!string.IsNullOrEmpty(DeckId))
             {
-                Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Card>>(MakeGETRequest(QueryURL));
+                Cards = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Card>>(Utilities.MakeGETRequest(QueryURL));
                 HiddenDeckId.Value = DeckId;
 
             }
             else
                 return null;
-            return Decks.AsQueryable();
+            return Cards.AsQueryable();
         }
-        private string MakeGETRequest(string uri)
-        {
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }
         public void EditCard(object sender, GridViewUpdateEventArgs e)
         {
             Card Card = new Card();
@@ -100,7 +92,7 @@ namespace VerbatimWeb
 
             using (var client = new System.Net.WebClient())
             {
-                client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
+                client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
             }
         }
         public void DeleteCard(Card Card)
@@ -109,12 +101,12 @@ namespace VerbatimWeb
 
             using (var client = new System.Net.WebClient())
             {
-                client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
+                client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
             }
         }
         public void InsertCard(string Title, string Description, string Category, int PointValue, string CustomCategory)
         {
-            if (String.IsNullOrEmpty(Title) || String.IsNullOrEmpty(Description) || String.IsNullOrEmpty(Category))
+            if ((Category == "ADD NEW CATEGORY" && string.IsNullOrEmpty(CustomCategory)) || String.IsNullOrEmpty(Title) || String.IsNullOrEmpty(Description) || String.IsNullOrEmpty(Category))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
                             "alertMessage", @"alert('" + "Everything is required!" + "')", true);
@@ -131,14 +123,30 @@ namespace VerbatimWeb
             if (Category == "ADD NEW CATEGORY")
                 Card.Category = CustomCategory;
 
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
+            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCards/" + Int32.Parse(HiddenDeckId.Value);
+
+            List<Card> Cards = null;
+
+            Cards = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Card>>(Utilities.MakeGETRequest(QueryURL));
+
+            foreach(Card CardFromDeck in Cards)
+            {
+                if(CardFromDeck.Title == Card.Title)
+                {
+                    ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "A card with the title: " + Card.Title + " is already in your deck!" + "')", true);
+                    Response.Redirect(HttpContext.Current.Request.Url.PathAndQuery, false);
+                    return;
+                }
+            }
+
+            QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
 
             using (var client = new System.Net.WebClient())
             {
-                client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Card)));
+                client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
             }
-            Uri uri = HttpContext.Current.Request.Url;
-            Response.Redirect(uri.PathAndQuery + "?Filter=" + Title, false);
+            Response.Redirect("DeckCardsView.aspx?Filter=" + Title, false);
 
         }
         protected void DeckCardsGridView_RowCreated(object sender, GridViewRowEventArgs e)

@@ -5,7 +5,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace VerbatimService
 {
@@ -26,6 +28,8 @@ namespace VerbatimService
         private int UnixTimeStamp;
         public static string DriveLetter;
 
+        public static List<string> NotConflictRedWords = new List<string> {"its","it's","at","her","what","who","your","we're", "you're", "they're", "i'm", "by", "their", "than", "it", "as", "they", "you", "his", "&", "from", "with", "in", "of", "on", "you", "too", "to", "that", "the", "and", "but", "for", "nor", "or", "so", "yet", "a", "an", "be", "am", "are", "is", "was", "were", "being", "been", "can", "could", "dare", "do", "does", "did", "have", "has", "had", "having", "may", "might", "must", "need", "ought", "shall", "should", "will", "would" };
+
         private static readonly int CardWidth = 663;
         private static readonly int CardHeight = 1001;
 
@@ -40,8 +44,6 @@ namespace VerbatimService
 
             DeleteOldFiles();
 
-            List<int> CardCounts = FixDistribution(Distribution, DeckSize);
-
             if (string.IsNullOrEmpty(Token))
                 DeckId = 1;
             else
@@ -50,11 +52,18 @@ namespace VerbatimService
             if (DeckId < 1)
                 return "";
 
+            Deck Deck = Persistence.GetDeck(DeckId.ToString());
+            List<int> CardCounts = new List<int>();
+            if (Deck.UseStandardDistribution)
+                CardCounts = FixDistribution(Distribution, DeckSize);
 
-            GenerateCards(CardCounts, SteamIds, DeckId);
+            GenerateCards(CardCounts, SteamIds, DeckId, DeckSize);
 
             foreach (Card Card in CardObjects)
+            {
+                Card.Description = ProcessMarkupString(Card.Description);
                 CardImages.Add(GenerateImage(Card));
+            }
 
             Bitmap SheetBitMap = CreateSheetFromCards();
             string FileName = DateTime.Now.ToString("MM-dd-yyyy-HH：mm：ss") + ".png";
@@ -76,7 +85,7 @@ namespace VerbatimService
             return FileName;
         }
 
-        private void GenerateCards(List<int> CardCounts, List<string> SteamIDs, int DeckId)
+        private void GenerateCards(List<int> CardCounts, List<string> SteamIDs, int DeckId, int DeckSize)
         {
             int count = 1;
 
@@ -97,6 +106,23 @@ namespace VerbatimService
             //AND PointValue = 1
             //AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
             //ORDER BY RANDOM() LIMIT 10
+            string TemplateSQLRandom = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, 0 as rowOrder, RANDOM() as Random
+								FROM VerbatimCard 
+								LEFT JOIN VerbatimCardPlayHistory
+								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
+								AND VerbatimCardPlayHistory.SteamID IN({0})
+								WHERE VerbatimDeckId = {2}
+								AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
+								UNION
+								SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, COUNT(*) as rowOrder, RANDOM() as Random
+								FROM VerbatimCard 
+								INNER JOIN VerbatimCardPlayHistory
+								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
+								WHERE VerbatimDeckId = {2}
+								AND VerbatimCardPlayHistory.SteamID IN({0})    
+								GROUP BY VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue
+								ORDER BY rowOrder ASC, RANDOM()
+                                LIMIT {1}";
 
 
             string TemplateSQL = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, 0 as rowOrder, RANDOM() as Random
@@ -118,10 +144,59 @@ namespace VerbatimService
 								GROUP BY VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue
 								ORDER BY rowOrder ASC, RANDOM()
 								LIMIT {2}";
-
-            foreach (int CardCount in CardCounts)
+            if (CardCounts.Count > 0)
             {
-                string SelectSQL = String.Format(TemplateSQL, SteamIDList, count, CardCount, DeckId);
+                foreach (int CardCount in CardCounts)
+                {
+                    string SelectSQL = String.Format(TemplateSQL, SteamIDList, count, CardCount, DeckId);
+                    //string sql = "SELECT VerbatimCardId, Title, Description, Category, PointValue FROM VerbatimCard WHERE VerbatimDeckId = 1 AND PointValue = " + count + " ORDER BY RANDOM() LIMIT " + CardCount;
+                    SQLiteCommand Command = new SQLiteCommand(SelectSQL, Connection);
+                    using (SQLiteDataReader SQLiteDataReader = Command.ExecuteReader())
+                    {
+                        while (SQLiteDataReader.Read())
+                        {
+                            Card Card = new Card();
+                            Card.VerbatimCardId = SQLiteDataReader.GetInt32(0);
+                            Card.Title = SQLiteDataReader.GetString(1);
+                            Card.Description = SQLiteDataReader.GetString(2);
+                            Card.Category = SQLiteDataReader.GetString(3);
+                            Card.PointValue = SQLiteDataReader.GetInt32(4);
+                            CardObjects.Add(Card);
+
+                            string UpsertSQLSelect = @"SELECT VerbatimCardId
+								                FROM VerbatimCardPlayHistory
+								                WHERE VerbatimCardId = {0}
+								                AND SteamID = '{1}'";
+                            string InsertSQL = @"INSERT INTO VerbatimCardPlayHistory (VerbatimCardId, SteamID, DateTimeUsed)
+								                 VALUES ({0},'{1}',{2})";
+                            string UpdateSQL = @"UPDATE VerbatimCardPlayHistory
+								                SET DateTimeUsed = {2}
+								                WHERE VerbatimCardId = {0}
+								                AND SteamID = '{1}'";
+                            // UPSERT INTO VerbatimCardPlayHistory
+                            foreach (string SteamID in SteamIDs)
+                            {
+                                SQLiteCommand UpsertSelectCommand = new SQLiteCommand(String.Format(UpsertSQLSelect, Card.VerbatimCardId, SteamID), Connection);
+                                if (UpsertSelectCommand.ExecuteScalar() == null)
+                                {
+
+                                    SQLiteCommand InsertCommand = new SQLiteCommand(String.Format(InsertSQL, Card.VerbatimCardId, SteamID, UnixTimeStamp), Connection);
+                                    InsertCommand.ExecuteNonQuery();
+                                }
+                                else
+                                {
+                                    SQLiteCommand UpdateCommand = new SQLiteCommand(String.Format(UpdateSQL, Card.VerbatimCardId, SteamID, UnixTimeStamp), Connection);
+                                    UpdateCommand.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                    }
+                    count++;
+                }
+            }
+            else
+            {
+                string SelectSQL = String.Format(TemplateSQLRandom, SteamIDList, DeckSize, DeckId);
                 //string sql = "SELECT VerbatimCardId, Title, Description, Category, PointValue FROM VerbatimCard WHERE VerbatimDeckId = 1 AND PointValue = " + count + " ORDER BY RANDOM() LIMIT " + CardCount;
                 SQLiteCommand Command = new SQLiteCommand(SelectSQL, Connection);
                 using (SQLiteDataReader SQLiteDataReader = Command.ExecuteReader())
@@ -137,20 +212,20 @@ namespace VerbatimService
                         CardObjects.Add(Card);
 
                         string UpsertSQLSelect = @"SELECT VerbatimCardId
-								            FROM VerbatimCardPlayHistory
-								            WHERE VerbatimCardId = {0}
-								            AND SteamID = '{1}'";
+								                FROM VerbatimCardPlayHistory
+								                WHERE VerbatimCardId = {0}
+								                AND SteamID = '{1}'";
                         string InsertSQL = @"INSERT INTO VerbatimCardPlayHistory (VerbatimCardId, SteamID, DateTimeUsed)
-								             VALUES ({0},'{1}',{2})";
+								                 VALUES ({0},'{1}',{2})";
                         string UpdateSQL = @"UPDATE VerbatimCardPlayHistory
-								            SET DateTimeUsed = {2}
-								            WHERE VerbatimCardId = {0}
-								            AND SteamID = '{1}'";
+								                SET DateTimeUsed = {2}
+								                WHERE VerbatimCardId = {0}
+								                AND SteamID = '{1}'";
                         // UPSERT INTO VerbatimCardPlayHistory
                         foreach (string SteamID in SteamIDs)
                         {
                             SQLiteCommand UpsertSelectCommand = new SQLiteCommand(String.Format(UpsertSQLSelect, Card.VerbatimCardId, SteamID), Connection);
-                            if(UpsertSelectCommand.ExecuteScalar() == null)
+                            if (UpsertSelectCommand.ExecuteScalar() == null)
                             {
 
                                 SQLiteCommand InsertCommand = new SQLiteCommand(String.Format(InsertSQL, Card.VerbatimCardId, SteamID, UnixTimeStamp), Connection);
@@ -164,7 +239,6 @@ namespace VerbatimService
                         }
                     }
                 }
-                count++;
             }
 
 
@@ -235,7 +309,13 @@ namespace VerbatimService
                 graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
                                      new Rectangle(35, 35, OutPutImage.Size.Width - 70, 250), StringFormat);
                 // add desc
-                graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
+
+
+                List<string> DetectedWords = DetectWordInString(Card.Description, Card.Title);
+                if (DetectedWords.Count > 0)
+                    DrawWithRedWords(Card.Description, graphics, OutPutImage, DetectedWords);
+                else
+                    graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
                      new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
 
                 // add category
@@ -334,6 +414,63 @@ namespace VerbatimService
                 if (Directory.GetCreationTime(SheetFile) < DateTime.Now.AddMinutes(-300))
                     File.Delete(SheetFile);
             }
+
+        }
+
+        private static void DrawWithRedWords(string words, Graphics g, Image OutPutImage, List<string> RedWords)
+        {
+            TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
+                        TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
+
+            List<Match> mc = Regex.Matches(words, @"[^\s]+").Cast<Match>().ToList();
+            
+            List<List<Match>> lists = splitList<Match>(mc, 32).ToList();
+            foreach(List<Match> list in lists)
+            {
+                List<CharacterRange> ranges = new List<CharacterRange>();
+                ranges.AddRange(list.Select(m => new CharacterRange(m.Index, m.Length)).ToArray());
+                StringFormatDesc.SetMeasurableCharacterRanges(ranges.ToArray());
+                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+
+                for (int i = 0; i < ranges.Count; i++)
+                {
+                    Rectangle WordBounds = Rectangle.Round(regions[i].GetBounds(g));
+                    string word = words.Substring(ranges[i].First, ranges[i].Length);
+                    if (RedWords.Contains(word))
+                        TextRenderer.DrawText(g, word, StringFontDesc, WordBounds, Color.Red, flags);
+                    else
+                        TextRenderer.DrawText(g, word, StringFontDesc, WordBounds, Color.Black, flags);
+                }
+            }            
+        }
+
+        public static IEnumerable<List<T>> splitList<T>(List<T> locations, int nSize = 30)
+        {
+            for (int i = 0; i < locations.Count; i += nSize)
+            {
+                yield return locations.GetRange(i, Math.Min(nSize, locations.Count - i));
+            }
+        }
+
+        private static List<string> DetectWordInString(string Description, string Title)
+        {
+            List<string> Detected = new List<string>();
+            Description = Description.Replace(",", "");
+            Description = Description.Replace("\"", "");
+
+            List<string> DescriptionWords = Description.Split(' ').ToList();
+            List<string> TitleWords = Title.Split(' ').ToList();
+
+            foreach (string DescriptionWord in DescriptionWords)
+                foreach(string TitleWord in TitleWords)
+                    if (DescriptionWord.ToLower() == TitleWord.ToLower() && !NotConflictRedWords.Contains(TitleWord.ToLower()))
+                        Detected.Add(TitleWord);
+            return Detected;
+
+        }
+        private static string ProcessMarkupString(string StringToMarkUp)
+        {
+            return StringToMarkUp.Replace("\\n", "\n");
 
         }
     }

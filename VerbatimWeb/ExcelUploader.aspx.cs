@@ -1,9 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using VerbatimService;
 
 namespace VerbatimWeb
 {
@@ -11,20 +16,50 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Application["DeckId"] == null || string.IsNullOrEmpty(Application["DeckId"].ToString()))
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 Response.Redirect("Default.aspx");
         }
         protected void ButtonUpload_Click(object sender, EventArgs e)
         {
-            if (Application["DeckId"] == null || string.IsNullOrEmpty(Application["DeckId"].ToString()))
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 return;
-            string DeckId = Application["DeckId"].ToString();
-            if (!FileUploadCSV.FileName.EndsWith(".csv"))
+            string DeckId = DeckIdCookie.ToString();
+            if (!FileUploadCSV.FileName.EndsWith(".csv") && !FileUploadCSV.FileName.EndsWith(".tsv"))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
-                            "alertMessage", @"alert('" + "File MUST be a .CSV (You can save to this from Excel)" + "')", true);
+                            "alertMessage", @"alert('" + "File MUST be a .CSV/.TSV (You can save to this from Excel/Sheets)" + "')", true);
                 return;
             }
+
+            StreamReader reader = new StreamReader(FileUploadCSV.FileContent);
+            string Line = "";
+            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
+
+            while ((Line = reader.ReadLine()) != null)
+            {
+
+                List<string> LineValues = new List<string>();
+                if (FileUploadCSV.FileName.EndsWith(".tsv"))
+                    LineValues = Line.Split('\t').ToList();
+                else
+                    LineValues = Regex.Split(Line, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)").ToList();
+                Card Card = new Card();
+                Card.VerbatimDeckId = Int32.Parse(DeckId);
+                Card.Title = LineValues[0].ToString();
+                Card.Description = LineValues[1].ToString();
+                Card.Category = LineValues[2].ToString();
+                Card.PointValue = Int32.Parse(LineValues[3].ToString());
+
+                using (var client = new System.Net.WebClient())
+                {
+                    client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
+                }
+            }
+            reader.Close();
+
+            Response.Redirect("DeckCardsView.aspx");
         }
     }
 }

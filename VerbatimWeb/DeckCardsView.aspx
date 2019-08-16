@@ -59,6 +59,8 @@
                     </td>
                     <td>
                         <asp:TextBox ID="Title" runat="server" Columns="100" Text='<%# Bind("Title") %>' />
+                        <asp:RequiredFieldValidator ValidationGroup="Insert" ID="RequiredFieldValidator4" runat="server" ControlToValidate="Title" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
+
                     </td>
                 </tr>
                 <tr>
@@ -67,6 +69,8 @@
                     </td>
                     <td>
                         <asp:TextBox ID="Description" runat="server" Columns="100" TextMode="MultiLine" Text='<%# Bind("Description") %>' />
+                        <asp:RequiredFieldValidator ValidationGroup="Insert" ID="RequiredFieldValidator1" runat="server" ControlToValidate="Description" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
+
                     </td>
                 </tr>
                 <tr>
@@ -106,11 +110,13 @@
                 </tr>
                 <tr>
                     <td>
-                        <asp:Button CssClass="btn btn-success" Text="Insert" runat="server" CommandName="Insert" />
+                        <asp:Button ValidationGroup="Insert" CssClass="btn btn-success" Text="Insert" CausesValidation="True" runat="server" CommandName="Insert" />
                     </td>
                 </tr>
             </table>
         </InsertItemTemplate>
+        
 	</asp:FormView>
+
 
 </asp:Content>

@@ -79,6 +79,11 @@ namespace VerbatimService
             BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "DeleteCard")]
         void DeleteCard(Card Card);
 
+        [OperationContract]
+        [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "DeleteOneCardPlayHistory")]
+        void DeleteOneCardPlayHistory(string SteamID, int CardId);
+
     }
 
 

@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.DataVisualization.Charting;
 using System.Web.UI.WebControls;
 using VerbatimService;
 
@@ -19,46 +21,64 @@ namespace VerbatimWeb
                 Response.Redirect("Default.aspx");
 
 
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.QueryString["DeckId"]));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.QueryString["DeckId"]));
             Name.Text = Deck.Name;
             Description.Text = Deck.Description;
             Author.Text = Deck.Author;
             Token.Text = Deck.IdentifiyngToken;
-            Application["DeckId"] = Deck.VerbatimDeckId.ToString();
+            TotalCards.Text = Deck.TotalCards.ToString();
+            Distribution.Text = Deck.UseStandardDistribution ? "Standard" : "Random" ; 
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            Response.Cookies.Add(DeckIdCookie);
+
+            double[] yValues = { Deck.OnePointTotalCards, Deck.TwoPointTotalCards, Deck.ThreePointTotalCards, Deck.FourPointTotalCards};
+            string[] xValues = { "1", "2", "3", "4" };
+
+            Chart1.Series["Default"].Points.DataBindXY(xValues, yValues);
+
+            Chart1.Series["Default"].Points[0].Color = Color.DarkGreen;
+            Chart1.Series["Default"].Points[1].Color = Color.Navy;
+            Chart1.Series["Default"].Points[2].Color = Color.OrangeRed;
+            Chart1.Series["Default"].Points[3].Color = Color.Black;
+
+            Chart1.Series["Default"].ChartType = SeriesChartType.Pie;
+            Chart1.Series["Default"]["PieLabelStyle"] = "Disabled";
+            Chart1.ChartAreas["ChartArea1"].Area3DStyle.Enable3D = true;
+            Chart1.Legends[0].Enabled = true;
         }
         protected void ButtonViewCards_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Application["DeckId"].ToString()));
-
-            Application["DeckId"] = Deck.VerbatimDeckId.ToString();
-            if (Deck.Password == PasswordBox.Text)
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            Response.Cookies.Add(DeckIdCookie);
+            if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
                 Response.Redirect("DeckCardsView.aspx", false);
             else
-                return;
+            {
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Incorrect password!" + "')", true);
+            }
         }
         protected void ButtonExcelUpload_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Application["DeckId"].ToString()));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
 
-            Application["DeckId"] = Deck.VerbatimDeckId.ToString();
-            if (Deck.Password == PasswordBox.Text)
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            Response.Cookies.Add(DeckIdCookie);
+            if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
                 Response.Redirect("ExcelUploader.aspx", false);
             else
-                return;
-        }
-        
-        private string MakeGETRequest(string uri)
-        {
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
             {
-                return reader.ReadToEnd();
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Incorrect password!" + "')", true);
             }
         }
+        
     }
 }

@@ -53,7 +53,7 @@ namespace VerbatimWeb
             }
             string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetAllDecks";
 
-            List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(MakeGETRequest(QueryURL));
+            List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
 
             foreach(Deck DeckFromDB in Decks)
             {
@@ -73,27 +73,19 @@ namespace VerbatimWeb
 
             QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertDeck";
 
+            Deck.Password = Utilities.sha256_hash(Deck.Password); 
+
             using (var client = new System.Net.WebClient())
             {
-                byte[] response = client.UploadData(QueryURL, "PUT", Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(Deck)));
-                Application["DeckId"] = client.Encoding.GetString(response);
+                byte[] response = client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Deck)));
+                HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+                DeckIdCookie.Values.Add("VerbatimDeckId", client.Encoding.GetString(response));
+                DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+                Response.Cookies.Add(DeckIdCookie);
             }
 
             Response.Redirect("DeckCardsView.aspx");
 
-        }
-        private string MakeGETRequest(string uri)
-        {
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (System.Net.HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
         }
     }
 }

@@ -37,6 +37,13 @@ namespace VerbatimWeb
                 e.Row.Cells[1].Visible = false;
                 e.Row.Cells[5].Visible = false;
                 e.Row.Cells[6].Visible = false;
+                e.Row.Cells[7].Visible = false;
+                e.Row.Cells[8].Visible = false;
+                e.Row.Cells[9].Visible = false;
+                e.Row.Cells[10].Visible = false;
+                e.Row.Cells[11].Visible = false;
+                e.Row.Cells[12].Visible = false;
+
             }
         }
 
@@ -47,7 +54,7 @@ namespace VerbatimWeb
             List<Deck> Decks = new List<Deck>();
 
             if (!string.IsNullOrEmpty(query))
-                Decks = JsonConvert.DeserializeObject<List<Deck>>(MakeGETRequest(QueryURL));
+                Decks = JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
             if(Decks.Count == 0)
             {
                 SearchSection.Visible = true;
@@ -61,19 +68,6 @@ namespace VerbatimWeb
             if(Decks.Count > 0)
                 HiddenDeckId.Value = Decks[0].VerbatimDeckId.ToString();
             return Decks.AsQueryable();
-        }
-        private string MakeGETRequest(string uri)
-        {
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
         }
         protected void ButtonSearch_Click(object sender, EventArgs e)
         {

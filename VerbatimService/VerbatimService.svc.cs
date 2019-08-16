@@ -95,7 +95,7 @@ namespace VerbatimService
 
             try
             {
-                string Host = "";
+                string Host = "platypuseggs.com";
                 if (System.Web.HttpContext.Current != null)
                     Host = System.Web.HttpContext.Current.Request.Url.Host;
 
@@ -154,6 +154,12 @@ namespace VerbatimService
         {
             Initialize();
             return Persistence.GetDeckCategories(DeckId);
+        }
+
+        public void DeleteOneCardPlayHistory(string SteamID, int CardId)
+        {
+            Initialize();
+            Persistence.DeleteOneCardPlayHistory(CardId, SteamID);
         }
     }
 }
