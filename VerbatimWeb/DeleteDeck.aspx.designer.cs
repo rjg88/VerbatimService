@@ -10,51 +10,33 @@
 namespace VerbatimWeb {
     
     
-    public partial class DeckCardsView {
+    public partial class DeleteDeck {
         
         /// <summary>
-        /// ImageHolder control.
+        /// TextBoxDeckName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlImage ImageHolder;
+        protected global::System.Web.UI.WebControls.TextBox TextBoxDeckName;
         
         /// <summary>
-        /// HiddenDeckId control.
+        /// TextBoxPassword control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField HiddenDeckId;
+        protected global::System.Web.UI.WebControls.TextBox TextBoxPassword;
         
         /// <summary>
-        /// FilterInputBox control.
+        /// ButtonDeleteDeck control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox FilterInputBox;
-        
-        /// <summary>
-        /// ButtonFilter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ButtonFilter;
-        
-        /// <summary>
-        /// DeckCardsGridView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView DeckCardsGridView;
+        protected global::System.Web.UI.WebControls.Button ButtonDeleteDeck;
     }
 }

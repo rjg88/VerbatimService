@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -50,6 +51,11 @@ namespace VerbatimService
             return Persistence.GetDeck(DeckId);
         }
 
+        public Card GetCard(string CardId)
+        {
+            Initialize();
+            return Persistence.GetCard(CardId);
+        }
         public List<Deck> SearchForDeck(string Query)
         {
             Initialize();
@@ -132,6 +138,12 @@ namespace VerbatimService
             Persistence.DeleteCard(Card);
         }
 
+        public void DeleteDeck(Deck Deck)
+        {
+            Initialize();
+            Persistence.DeleteDeck(Deck);
+        }
+
         public int InsertDeck(Deck Deck)
         {
             Initialize();
@@ -160,6 +172,25 @@ namespace VerbatimService
         {
             Initialize();
             Persistence.DeleteOneCardPlayHistory(CardId, SteamID);
+        }
+
+        public Stream RenderCard(string CardId)
+        {
+            Initialize();
+            ImageProcessing.Initialize();
+            Card Card = GetCard(CardId);
+
+            Bitmap bmp = ImageProcessing.GenerateImage(Card);
+            MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            ms.Position = 0;  //This's a very important
+            return ms;
+        }
+
+        public void DeleteCardPlayHistories(List<string> SteamIDs, List<int> CardIDs)
+        {
+            Initialize();
+            Persistence.DeleteCardPlayHistories(SteamIDs, CardIDs);
         }
     }
 }

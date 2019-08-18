@@ -10,16 +10,7 @@
 namespace VerbatimWeb {
     
     
-    public partial class DeckCardsView {
-        
-        /// <summary>
-        /// ImageHolder control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlImage ImageHolder;
+    public partial class DeckCardsEdit {
         
         /// <summary>
         /// HiddenDeckId control.
@@ -56,5 +47,14 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView DeckCardsGridView;
+        
+        /// <summary>
+        /// InsertCardFormView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FormView InsertCardFormView;
     }
 }

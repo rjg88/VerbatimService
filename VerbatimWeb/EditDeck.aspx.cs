@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.UI;
@@ -12,15 +10,31 @@ using VerbatimService;
 
 namespace VerbatimWeb
 {
-    public partial class CreateDeck : System.Web.UI.Page
+    public partial class EditDeck : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
+            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
+                Response.Redirect("Default.aspx");
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + DeckIdCookie.ToString()));
+
+            if (String.IsNullOrEmpty(((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Name")).Text))
+            {
+                ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Name")).Text = Deck.Name;
+                ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Description")).Text = Deck.Description;
+                ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("TextBoxAuthor")).Text = Deck.Author;
+                ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("TextBoxIDToken")).Text = Deck.IdentifiyngToken;
+                ((RadioButtonList)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("RadioDistribution")).SelectedIndex = Deck.UseStandardDistribution ? 0 : 1;
+            }
 
         }
-        public void InsertDeck(Deck Deck)
+        public void UpdateDeck(Deck Deck)
         {
-
+            string DeckIdCookieString = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            if (string.IsNullOrEmpty(DeckIdCookieString))
+                Response.Redirect("Default.aspx");
+            Deck.VerbatimDeckId = Int32.Parse(DeckIdCookieString.ToString());
             if (string.IsNullOrEmpty(Deck.IdentifiyngToken))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -39,12 +53,6 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Description is required!" + "')", true);
                 return;
             }
-            if (string.IsNullOrEmpty(Deck.Password))
-            {
-                ScriptManager.RegisterClientScriptBlock(this, GetType(),
-                            "alertMessage", @"alert('" + "Password is required!" + "')", true);
-                return;
-            }
             if (string.IsNullOrEmpty(Deck.Name))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -55,9 +63,11 @@ namespace VerbatimWeb
 
             List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
 
-            foreach(Deck DeckFromDB in Decks)
+            foreach (Deck DeckFromDB in Decks)
             {
-                if(Deck.Name == DeckFromDB.Name)
+                if (Deck.VerbatimDeckId == Deck.VerbatimDeckId)
+                    break;
+                if (Deck.Name == DeckFromDB.Name)
                 {
                     ScriptManager.RegisterClientScriptBlock(this, GetType(),
                             "alertMessage", @"alert('" + "Name is already taken!" + "')", true);
@@ -71,9 +81,7 @@ namespace VerbatimWeb
                 }
             }
 
-            QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertDeck";
-
-            Deck.Password = Utilities.sha256_hash(Deck.Password); 
+            QueryURL = "http://platypuseggs.com/VerbatimService.svc/EditDeck";
 
             using (var client = new System.Net.WebClient())
             {
@@ -84,8 +92,7 @@ namespace VerbatimWeb
                 Response.Cookies.Add(DeckIdCookie);
             }
 
-            Response.Redirect("DeckCardsView.aspx");
-
+            Response.Redirect("DeckDetails.aspx?DeckId=" + Deck.VerbatimDeckId);
         }
     }
 }

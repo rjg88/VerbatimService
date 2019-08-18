@@ -17,47 +17,36 @@ namespace VerbatimDDL
             SQLiteConnection Connection = new SQLiteConnection("Data Source=" + "C" + @":\Verbatim\Verbatim.sqlite;Version=3;");
             Connection.Open();
 
-            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"DELETE FROM VerbatimCard WHERE VerbatimDECKID = 17";
+            // Delete Lobsters play hs
+            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"DELETE FROM VerbatimCardPlayhistory WHERE SteamID = 76561198050223251";
             //SQLiteCommand.ExecuteNonQuery();
 
-
-            SQLiteCommand.CommandText = @"ALTER TABLE VerbatimDeck ADD UseStandardDistribution text";
-            SQLiteCommand.CommandText = @"SELECT TITLE, Description FROM VerbatimCard WHERE VerbatimDeckId = 1";
-            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
-            {
-                while (SQLiteDataReader.Read())
-                {
-                    string title = SQLiteDataReader.GetString(0);
-                    string decription = SQLiteDataReader.GetString(1);
-                    List<string> redwords = DetectWordInString(decription, title);
-                    if (redwords.Count > 0)
-                    {
-                        if (redwords[0].Trim() != "")
-                            File.AppendAllText("test.txt", "Title:" + title + " In Desc:" + redwords[0] + "\n");
-                    }
-                }
-            }
-
-
+            //delete broken cards
+            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand.CommandText = @"DELETE FROM VerbatimCard where title is null;";
             SQLiteCommand.ExecuteNonQuery();
 
 
-        }
-        private static List<string> DetectWordInString(string Description, string Title)
-        {
-            List<string> Detected = new List<string>();
-            Description = Description.Replace(",", "");
-            Description = Description.Replace("\"", "");
+            //SQLiteCommand.CommandText = @"ALTER TABLE VerbatimDeck ADD UseStandardDistribution text";
+            //SQLiteCommand.CommandText = @"SELECT TITLE, Description FROM VerbatimCard WHERE VerbatimDeckId = 1";
+            //using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
+            //{
+            //    while (SQLiteDataReader.Read())
+            //    {
+            //        string title = SQLiteDataReader.GetString(0);
+            //        string decription = SQLiteDataReader.GetString(1);
+            //        List<string> redwords = DetectWordInString(decription, title);
+            //        if (redwords.Count > 0)
+            //        {
+            //            if (redwords[0].Trim() != "")
+            //                File.AppendAllText("test.txt", "Title:" + title + " In Desc:" + redwords[0] + "\n");
+            //        }
+            //    }
+            //}
 
-            List<string> DescriptionWords = Description.Split(' ').ToList();
-            List<string> TitleWords = Title.Split(' ').ToList();
+            //SQLiteCommand.ExecuteNonQuery();
 
-            foreach (string DescriptionWord in DescriptionWords)
-                foreach (string TitleWord in TitleWords)
-                    if (DescriptionWord.ToLower() == TitleWord.ToLower() && !NotConflictRedWords.Contains(TitleWord.ToLower()))
-                        Detected.Add(TitleWord);
-            return Detected;
 
         }
     }

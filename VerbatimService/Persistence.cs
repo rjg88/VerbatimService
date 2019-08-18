@@ -41,7 +41,7 @@ namespace VerbatimService
                            SET Name = :Name,
                                Description = :Description,
                                Author = :Author,
-                               IdentifiyngToken = :IdentifiyngToken
+                               IdentifiyngToken = :IdentifiyngToken,
                                UseStandardDistribution = :UseStandardDistribution
                          WHERE VerbatimDeckId = :VerbatimDeckId";
             SQLiteCommand.Parameters.Add("Name", DbType.String).Value = Deck.Name;
@@ -82,6 +82,28 @@ namespace VerbatimService
                 }
             }
             return Deck;
+        }
+
+        public Card GetCard(string CardId)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            Card Card = new Card();
+            SQLiteCommand.CommandText = @"SELECT Title, Description, Category, PointValue
+                        FROM VerbatimCard
+                        WHERE VerbatimCardId = :VerbatimCardId";
+            SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = CardId;
+            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
+            {
+                while (SQLiteDataReader.Read())
+                {
+                    Card.Title = SQLiteDataReader.GetString(0);
+                    Card.Description = SQLiteDataReader.GetString(1);
+                    Card.Category = SQLiteDataReader.GetString(2);
+                    Card.PointValue = SQLiteDataReader.GetInt32(3);
+                }
+            }
+            return Card;
         }
 
         public List<Deck> GetAllDecks()
@@ -215,6 +237,21 @@ namespace VerbatimService
             SQLiteCommand.ExecuteNonQuery();
         }
 
+        public void DeleteDeck(Deck Deck)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"DELETE FROM VerbatimCard
+                                           WHERE  VerbatimDeckId = :VerbatimDeckId";
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Deck.VerbatimDeckId;
+            SQLiteCommand.ExecuteNonQuery();
+
+            SQLiteCommand.CommandText = @"DELETE FROM VerbatimDeck
+                                           WHERE  VerbatimDeckId = :VerbatimDeckId";
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Deck.VerbatimDeckId;
+            SQLiteCommand.ExecuteNonQuery();
+        }
+
         public int GetDeckIdByToken(string IdentifiyngToken)
         {
             SQLiteCommand = new SQLiteCommand(Connection);
@@ -244,7 +281,7 @@ namespace VerbatimService
             return Categories;
         }
 
-        public void DeleteOneCardPlayHistory(int CardId, string SteamID)
+        public void DeleteOneCardPlayHistory(int CardID, string SteamID)
         {
             SQLiteCommand = new SQLiteCommand(Connection);
 
@@ -252,10 +289,30 @@ namespace VerbatimService
                          WHERE VerbatimCardId = :VerbatimCardId
                          AND SteamID = :SteamID";
 
-            SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.Int32).Value = CardId;
+            SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.Int32).Value = CardID;
             SQLiteCommand.Parameters.Add("SteamID", DbType.String).Value = SteamID;
         
             SQLiteCommand.ExecuteNonQuery();
         }
+        public void DeleteCardPlayHistories(List<string> SteamIDs, List<int> CardIDs)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            foreach(string SteamID in SteamIDs)
+                foreach(int CardID in CardIDs)
+                {
+                    SQLiteCommand.CommandText = @"DELETE FROM VerbatimCardPlayHistory
+                         WHERE VerbatimCardId = :VerbatimCardId
+                         AND SteamID = :SteamID";
+
+                    SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.Int32).Value = CardID;
+                    SQLiteCommand.Parameters.Add("SteamID", DbType.String).Value = SteamID;
+
+                    SQLiteCommand.ExecuteNonQuery();
+                }
+            
+        }
+
+        
     }
 }

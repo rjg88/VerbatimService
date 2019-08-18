@@ -16,13 +16,13 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 Response.Redirect("Default.aspx");
         }
         protected void ButtonUpload_Click(object sender, EventArgs e)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
                 return;
             string DeckId = DeckIdCookie.ToString();

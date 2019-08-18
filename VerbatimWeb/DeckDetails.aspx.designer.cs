@@ -94,6 +94,15 @@ namespace VerbatimWeb {
         protected global::System.Web.UI.WebControls.Button ButtonViewCards;
         
         /// <summary>
+        /// ButtonEditCards control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonEditCards;
+        
+        /// <summary>
         /// ButtonExcelClick control.
         /// </summary>
         /// <remarks>
@@ -101,5 +110,23 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ButtonExcelClick;
+        
+        /// <summary>
+        /// ButtonEditDeck control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonEditDeck;
+        
+        /// <summary>
+        /// ButtonDeleteDeck control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonDeleteDeck;
     }
 }

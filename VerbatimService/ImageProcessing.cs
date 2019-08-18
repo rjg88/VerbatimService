@@ -29,7 +29,8 @@ namespace VerbatimService
         public static string DriveLetter;
 
         public static List<string> NotConflictRedWords = new List<string> {"its","it's","at","her","what","who","your","we're", "you're", "they're", "i'm", "by", "their", "than", "it", "as", "they", "you", "his", "&", "from", "with", "in", "of", "on", "you", "too", "to", "that", "the", "and", "but", "for", "nor", "or", "so", "yet", "a", "an", "be", "am", "are", "is", "was", "were", "being", "been", "can", "could", "dare", "do", "does", "did", "have", "has", "had", "having", "may", "might", "must", "need", "ought", "shall", "should", "will", "would" };
-
+        public static List<char> SpecialCharacters = new List<char>() { '.', '-', ' ', '\t', '\n', '\r' };
+        public static string SpecialCharactersForWeirdRegexThing = @"(?<=[\s.\-])";
         private static readonly int CardWidth = 663;
         private static readonly int CardHeight = 1001;
 
@@ -263,7 +264,7 @@ namespace VerbatimService
             return SheetBitMap;
         }
 
-        private void Initialize()
+        public void Initialize()
         {
             TemplateImage1 = Image.FromFile(DriveLetter + @":\Verbatim\Template1.png");
             TemplateImage2 = Image.FromFile(DriveLetter + @":\Verbatim\Template2.png");
@@ -275,6 +276,12 @@ namespace VerbatimService
 
             StringFormatDesc.LineAlignment = StringAlignment.Near;
             StringFormatDesc.Alignment = StringAlignment.Center;
+            StringFormatDesc.Trimming = StringTrimming.None;
+            StringFormatDesc.FormatFlags = StringFormatFlags.MeasureTrailingSpaces
+            | StringFormatFlags.NoFontFallback
+            | StringFormatFlags.FitBlackBox;
+
+
 
             Connection = new SQLiteConnection("Data Source=" + DriveLetter + @":\Verbatim\Verbatim.sqlite;Version=3;");
             Connection.Open();
@@ -286,7 +293,7 @@ namespace VerbatimService
             Persistence.Connection = Connection;
         }
 
-        private static Bitmap GenerateImage(Card Card)
+        public static Bitmap GenerateImage(Card Card)
         {
             Bitmap OutPutImage;
 
@@ -307,7 +314,7 @@ namespace VerbatimService
 
                 // add title
                 graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
-                                     new Rectangle(35, 35, OutPutImage.Size.Width - 70, 250), StringFormat);
+                                     new Rectangle(15, 35, OutPutImage.Size.Width - 50, 250), StringFormat);
                 // add desc
 
 
@@ -419,24 +426,33 @@ namespace VerbatimService
 
         private static void DrawWithRedWords(string words, Graphics g, Image OutPutImage, List<string> RedWords)
         {
-            TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter |
-                        TextFormatFlags.NoPadding | TextFormatFlags.NoClipping;
+            TextFormatFlags flags = TextFormatFlags.Left
+            | TextFormatFlags.NoPadding
+            | TextFormatFlags.PreserveGraphicsClipping
+            | TextFormatFlags.NoPrefix
+            | TextFormatFlags.GlyphOverhangPadding
+            | TextFormatFlags.WordBreak;
 
-            List<Match> mc = Regex.Matches(words, @"[^\s]+").Cast<Match>().ToList();
-            
-            List<List<Match>> lists = splitList<Match>(mc, 32).ToList();
-            foreach(List<Match> list in lists)
+            List<string> wordsList = Regex.Split(words, SpecialCharactersForWeirdRegexThing).ToList();
+            var index = 0;
+
+            List<List<string>> lists = splitList<string>(wordsList, 32).ToList();
+            foreach(List<string> list in lists)
             {
-                List<CharacterRange> ranges = new List<CharacterRange>();
-                ranges.AddRange(list.Select(m => new CharacterRange(m.Index, m.Length)).ToArray());
-                StringFormatDesc.SetMeasurableCharacterRanges(ranges.ToArray());
-                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                CharacterRange[] ranges = list.Select(m => {
+                    var range = new CharacterRange(index, m.Length);
+                    index += m.Length;
+                    return range;
+                }).ToArray();
 
-                for (int i = 0; i < ranges.Count; i++)
+                StringFormatDesc.SetMeasurableCharacterRanges(ranges);
+                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                for (int i = 0; i < ranges.Length; i++)
                 {
                     Rectangle WordBounds = Rectangle.Round(regions[i].GetBounds(g));
+                    File.AppendAllText(@"C:\Verbatim\test.txt", WordBounds.X + " " + WordBounds.Y + "\n");
                     string word = words.Substring(ranges[i].First, ranges[i].Length);
-                    if (RedWords.Contains(word))
+                    if (RedWords.Contains(word.ToLower().Trim(SpecialCharacters.ToArray())))
                         TextRenderer.DrawText(g, word, StringFontDesc, WordBounds, Color.Red, flags);
                     else
                         TextRenderer.DrawText(g, word, StringFontDesc, WordBounds, Color.Black, flags);
@@ -464,7 +480,7 @@ namespace VerbatimService
             foreach (string DescriptionWord in DescriptionWords)
                 foreach(string TitleWord in TitleWords)
                     if (DescriptionWord.ToLower() == TitleWord.ToLower() && !NotConflictRedWords.Contains(TitleWord.ToLower()))
-                        Detected.Add(TitleWord);
+                        Detected.Add(TitleWord.ToLower());
             return Detected;
 
         }

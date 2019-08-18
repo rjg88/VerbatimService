@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -81,8 +82,23 @@ namespace VerbatimService
 
         [OperationContract]
         [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "DeleteDeck")]
+        void DeleteDeck(Deck Deck);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "DeleteOneCardPlayHistory")]
-        void DeleteOneCardPlayHistory(string SteamID, int CardId);
+        void DeleteOneCardPlayHistory(string SteamId, int CardId);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "DeleteCardPlayHistories")]
+        void DeleteCardPlayHistories(List<string> SteamIds, List<int> CardIds);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "RenderCard/{CardId}")]
+        Stream RenderCard(string CardId);
 
     }
 

@@ -4,6 +4,13 @@
 
 <html lang="en">
 <head runat="server">
+    
+    <script type="text/javascript" src="../highslide/highslide-with-html.js"></script>
+    <link rel="stylesheet" type="text/css" href="../highslide/highslide.css" />
+    <script type="text/javascript">
+        hs.graphicsDir = '../highslide/graphics/';
+        hs.outlineType = 'rounded-white';
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> Verbatim Deck Management</title>
@@ -31,7 +38,7 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a runat="server" href="~/">I might need a link here.</a></li>
+<%--                        <li><a runat="server" href="~/"></a></li>--%>
                     </ul>
                 </div>
             </div>

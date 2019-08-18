@@ -30,7 +30,7 @@ namespace VerbatimWeb
             Distribution.Text = Deck.UseStandardDistribution ? "Standard" : "Random" ; 
             HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
             DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
             Response.Cookies.Add(DeckIdCookie);
 
             double[] yValues = { Deck.OnePointTotalCards, Deck.TwoPointTotalCards, Deck.ThreePointTotalCards, Deck.FourPointTotalCards};
@@ -53,10 +53,20 @@ namespace VerbatimWeb
             Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
             HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
             DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
+            Response.Cookies.Add(DeckIdCookie);
+            Response.Redirect("DeckCardsView.aspx", false);
+        }
+
+        protected void ButtonEditCards_Click(object sender, EventArgs e)
+        {
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
             Response.Cookies.Add(DeckIdCookie);
             if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
-                Response.Redirect("DeckCardsView.aspx", false);
+                Response.Redirect("DeckCardsEdit.aspx", false);
             else
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -69,7 +79,7 @@ namespace VerbatimWeb
 
             HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
             DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(1);
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
             Response.Cookies.Add(DeckIdCookie);
             if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
                 Response.Redirect("ExcelUploader.aspx", false);
@@ -79,6 +89,38 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Incorrect password!" + "')", true);
             }
         }
-        
+
+        protected void ButtonEdit_Click(object sender, EventArgs e)
+        {
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
+            Response.Cookies.Add(DeckIdCookie);
+            if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
+                Response.Redirect("EditDeck.aspx", false);
+            else
+            {
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Incorrect password!" + "')", true);
+            }
+        }
+        protected void ButtonDelete_Click(object sender, EventArgs e)
+        {
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+
+            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
+            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
+            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
+            Response.Cookies.Add(DeckIdCookie);
+            if (Deck.Password == PasswordBox.Text || Deck.Password == Utilities.sha256_hash(PasswordBox.Text))
+                Response.Redirect("DeleteDeck.aspx", false);
+            else
+            {
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Incorrect password!" + "')", true);
+            }
+        }
     }
 }
