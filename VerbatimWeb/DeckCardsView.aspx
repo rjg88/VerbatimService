@@ -1,4 +1,4 @@
-﻿<%@ Page Title="View a Deck's Cards" MasterPageFile="~/Site.Master" Language="C#" AutoEventWireup="true" CodeBehind="DeckCardsView.aspx.cs" Inherits="DeckCardsView" %>
+﻿<%@ Page Title="View a Deck's Cards" MasterPageFile="~/Site.Master" Language="C#" AutoEventWireup="true" CodeBehind="DeckCardsView.aspx.cs" Inherits="VerbatimWeb.DeckCardsView" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="highslide-html-content" id="highslide-html">
