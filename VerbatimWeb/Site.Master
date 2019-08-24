@@ -35,11 +35,19 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" runat="server" href="~/">Verbatim Deck Management</a>
+
                 </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-<%--                        <li><a runat="server" href="~/"></a></li>--%>
-                    </ul>
+                <div class="navbar-collapse navbar-right collapse">
+                    <table>
+                        <tr>
+                            <td>
+                                <asp:Label ForeColor="White" ID="SteamName" runat="server" Text=""></asp:Label>
+                            </td>
+                            <td>
+                                <asp:Image ID="SteamImage" runat="server" ImageUrl=""></asp:Image>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>

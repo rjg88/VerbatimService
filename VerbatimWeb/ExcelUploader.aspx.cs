@@ -16,9 +16,17 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                HttpCookie myCookie = new HttpCookie("SteamUserData");
+                myCookie.Expires = DateTime.Now.AddHours(-1);
+                Response.Cookies.Add(myCookie);
+
+                Response.Redirect("Default");
+            }
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
         }
         protected void ButtonUpload_Click(object sender, EventArgs e)
         {
@@ -35,7 +43,7 @@ namespace VerbatimWeb
 
             StreamReader reader = new StreamReader(FileUploadCSV.FileContent);
             string Line = "";
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
+            string QueryURL = Utilities.ServerDNS + "/InsertCard";
 
             while ((Line = reader.ReadLine()) != null)
             {
@@ -54,7 +62,14 @@ namespace VerbatimWeb
 
                 using (var client = new System.Net.WebClient())
                 {
-                    client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
+                    try
+                    {
+                        client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
+                    }
+                    catch
+                    {
+
+                    }
                 }
             }
             reader.Close();

@@ -192,5 +192,33 @@ namespace VerbatimService
             Initialize();
             Persistence.DeleteCardPlayHistories(SteamIDs, CardIDs);
         }
+
+        public string CreateSession(string SteamId, string ServerPassword)
+        {
+            Initialize();
+            if (ServerPassword == "PlatypusServerToken35_cgYjqa*345gfdr")
+                return Persistence.CreateSession(SteamId);
+            else
+                return "";
+        }
+
+        public bool VerfiySession(string AccessToken)
+        {
+            Initialize();
+            return Persistence.VerfiySession(AccessToken);
+        }
+
+        public bool CheckDeckAccess(string SteamId, int DeckId)
+        {
+            Initialize();
+            return Persistence.CheckDeckAccess(SteamId, DeckId);
+        }
+
+        public void RefreshAccessToken(string SteamId, string ServerPassword)
+        {
+            Initialize();
+            if (ServerPassword == "PlatypusServerToken35_cgYjqa*345gfdr")
+                Persistence.RefreshAccessToken(SteamId);
+        }
     }
 }

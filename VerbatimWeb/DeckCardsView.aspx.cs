@@ -16,7 +16,7 @@ namespace VerbatimWeb
         {
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
 
         }
         protected void ButtonFilter_Click(object sender, EventArgs e)
@@ -34,7 +34,7 @@ namespace VerbatimWeb
             string DeckId = DeckIdCookie.ToString();
             if (Filter == null)
                 Filter = "";
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCards/" + DeckId + "?filter=" + Filter;
+            string QueryURL = Utilities.ServerDNS + "/GetDeckCards/" + DeckId + "?filter=" + Filter;
 
             List<Card> Cards = null;
 
@@ -59,7 +59,7 @@ namespace VerbatimWeb
         }
         public void LoadImage(Card Card)
         {
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/RenderCard/" + Card.VerbatimCardId;
+            string QueryURL = Utilities.ServerDNS + "/RenderCard/" + Card.VerbatimCardId;
             MemoryStream ms = Utilities.MakeGETRequestStream(QueryURL);
             string base64Data = Convert.ToBase64String(ms.ToArray());
             ImageHolder.Src = "data:image/gif;base64," + base64Data;

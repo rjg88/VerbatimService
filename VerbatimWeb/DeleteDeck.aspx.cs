@@ -14,9 +14,15 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                HttpCookie myCookie = new HttpCookie("SteamUserData");
+                myCookie.Expires = DateTime.Now.AddHours(-1);
+                Response.Cookies.Add(myCookie); Response.Redirect("Default");
+            }
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
 
         }
 
@@ -24,12 +30,12 @@ namespace VerbatimWeb
         {
             string DeckIdCookieString = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
             if (string.IsNullOrEmpty(DeckIdCookieString))
-                Response.Redirect("Default.aspx");
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + DeckIdCookieString));
+                Response.Redirect("Default");
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + DeckIdCookieString));
 
             if(TextBoxDeckName.Text == Deck.Name && (Utilities.sha256_hash(TextBoxPassword.Text) == Deck.Password || TextBoxPassword.Text == Deck.Password))
             {
-                string QueryURL = "http://platypuseggs.com/VerbatimService.svc/DeleteDeck";
+                string QueryURL = Utilities.ServerDNS + "/DeleteDeck";
 
                 using (var client = new System.Net.WebClient())
                 {
@@ -39,7 +45,7 @@ namespace VerbatimWeb
                     DeckIdCookie.Expires = DateTime.Now.AddHours(24);
                     Response.Cookies.Add(DeckIdCookie);
                 }
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
             }
             else
             {

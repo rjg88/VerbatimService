@@ -43,13 +43,14 @@ namespace VerbatimWeb
                 e.Row.Cells[10].Visible = false;
                 e.Row.Cells[11].Visible = false;
                 e.Row.Cells[12].Visible = false;
+                e.Row.Cells[13].Visible = false;
 
             }
         }
 
         public IQueryable<Deck> LoadDeckCards([QueryString("query")] string query)
         {
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/SearchForDeck/" + query;
+            string QueryURL = Utilities.ServerDNS + "/SearchForDeck?Query=" + query;
 
             List<Deck> Decks = new List<Deck>();
 
@@ -71,7 +72,7 @@ namespace VerbatimWeb
         }
         protected void ButtonSearch_Click(object sender, EventArgs e)
         {
-            Response.Redirect("DeckSearchResults.aspx?query=" + SearchInputBox.Text, false);
+            Response.Redirect("DeckSearchResults.aspx?query=" + HttpUtility.UrlEncode(SearchInputBox.Text), false);
         }
     }
 }

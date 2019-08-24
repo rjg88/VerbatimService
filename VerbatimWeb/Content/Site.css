@@ -64,6 +64,7 @@ td, th {
 .mainbtn {
     margin: 50px;
     padding: 50px;
+    max-width: 500px;
 }
 
 

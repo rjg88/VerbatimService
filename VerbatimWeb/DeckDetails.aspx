@@ -57,8 +57,8 @@
 </asp:chart></td>
 					</tr>
 				</table>
-		    <asp:Label runat="server" Text="Password:" Font-Size="Medium"></asp:Label>
-		    <asp:textbox ID="PasswordBox" TextMode="Password" runat="server"></asp:textbox>
+		    <%--<asp:Label runat="server" Text="Password:" Font-Size="Medium"></asp:Label>
+		    <asp:textbox ID="PasswordBox" TextMode="Password" runat="server"></asp:textbox>--%>
             <asp:Button class="btn btn-primary" type="button" ID="ButtonViewCards" runat="server" onclick="ButtonViewCards_Click" Text="View Cards" />  
 		    <asp:Button class="btn btn-info" type="button" ID="ButtonEditCards" runat="server" onclick="ButtonEditCards_Click" Text="Edit Cards" />  
             <asp:Button class="btn btn-success" type="button" ID="ButtonExcelClick" runat="server" onclick="ButtonExcelUpload_Click" Text="Upload Spreadsheet" />  

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +17,25 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                HttpCookie myCookie = new HttpCookie("SteamUserData");
+                myCookie.Expires = DateTime.Now.AddHours(-1);
+                Response.Cookies.Add(myCookie); Response.Redirect("Default");
+            }
         }
         public void InsertDeck(Deck Deck)
         {
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                HttpCookie myCookie2 = new HttpCookie("SteamUserData");
+                myCookie2.Expires = DateTime.Now.AddHours(-1);
+                Response.Cookies.Add(myCookie2);
+                Response.Redirect("Default");
+            }
+            HttpCookie myCookie = Request.Cookies["SteamUserData"];
+
+            Deck.SteamId = JObject.Parse(myCookie.Values["SteamUserData"].ToString())["response"]["players"][0]["steamid"].ToString();
 
             if (string.IsNullOrEmpty(Deck.IdentifiyngToken))
             {
@@ -51,7 +67,7 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Name is required!" + "')", true);
                 return;
             }
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetAllDecks";
+            string QueryURL = Utilities.ServerDNS + "/GetAllDecks";
 
             List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
 
@@ -71,7 +87,7 @@ namespace VerbatimWeb
                 }
             }
 
-            QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertDeck";
+            QueryURL = Utilities.ServerDNS + "/InsertDeck";
 
             Deck.Password = Utilities.sha256_hash(Deck.Password); 
 
@@ -84,7 +100,7 @@ namespace VerbatimWeb
                 Response.Cookies.Add(DeckIdCookie);
             }
 
-            Response.Redirect("DeckCardsView.aspx");
+            Response.Redirect("DeckCardsEdit.aspx");
 
         }
     }

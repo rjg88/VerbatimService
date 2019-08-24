@@ -17,16 +17,22 @@ namespace VerbatimWeb
     { 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                HttpCookie myCookie = new HttpCookie("SteamUserData");
+                myCookie.Expires = DateTime.Now.AddHours(-1);
+                Response.Cookies.Add(myCookie); Response.Redirect("Default");
+            }
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
             //DeckCardsGridView.DataBind();
             
             DropDownList DropDownCategory = (DropDownList)this.Master.FindControl("MainContent").FindControl("InsertCardFormView").Controls[0].Controls[1].Controls[0].FindControl("AddNewCategorySection").FindControl("DropDownListCategory");
 
             if (DropDownCategory.Items.Count < 2)
             {
-                string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCategories/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+                string QueryURL = Utilities.ServerDNS + "/GetDeckCategories/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
                 List<string> Categories = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(Utilities.MakeGETRequest(QueryURL));
 
                 foreach (string Category in Categories)
@@ -64,7 +70,7 @@ namespace VerbatimWeb
             string DeckId = DeckIdCookie.ToString();
             if (Filter == null)
                 Filter = "";
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCards/" + DeckId + "?filter=" + Filter;
+            string QueryURL = Utilities.ServerDNS + "/GetDeckCards/" + DeckId + "?filter=" + Filter;
 
             List<Card> Cards = null;
 
@@ -89,7 +95,7 @@ namespace VerbatimWeb
             Card.Category = e.NewValues["Category"].ToString();
             Card.PointValue = Int32.Parse(e.NewValues["PointValue"].ToString());
 
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/EditCard";
+            string QueryURL = Utilities.ServerDNS + "/EditCard";
 
             using (var client = new System.Net.WebClient())
             {
@@ -98,7 +104,7 @@ namespace VerbatimWeb
         }
         public void DeleteCard(Card Card)
         {
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/DeleteCard";
+            string QueryURL = Utilities.ServerDNS + "/DeleteCard";
 
             using (var client = new System.Net.WebClient())
             {
@@ -124,7 +130,7 @@ namespace VerbatimWeb
             if (Category == "ADD NEW CATEGORY")
                 Card.Category = CustomCategory;
 
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetDeckCards/" + Int32.Parse(HiddenDeckId.Value);
+            string QueryURL = Utilities.ServerDNS + "/GetDeckCards/" + Int32.Parse(HiddenDeckId.Value);
 
             List<Card> Cards = null;
 
@@ -141,7 +147,7 @@ namespace VerbatimWeb
                 }
             }
 
-            QueryURL = "http://platypuseggs.com/VerbatimService.svc/InsertCard";
+            QueryURL = Utilities.ServerDNS + "/InsertCard";
 
             using (var client = new System.Net.WebClient())
             {

@@ -34,5 +34,8 @@ namespace VerbatimService
         public int TwoPointTotalCards { get; set; }
         [DataMember]
         public int OnePointTotalCards { get; set; }
+
+        [DataMember]
+        public string SteamId { get; set; }
     }
 }

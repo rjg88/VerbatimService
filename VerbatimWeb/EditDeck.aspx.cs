@@ -14,10 +14,14 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Utilities.CheckForValidSteamSession(Request.Cookies["AccessToken"]))
+            {
+                Response.Redirect("Default");
+            }
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default.aspx");
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest("http://platypuseggs.com/VerbatimService.svc/GetDeck/" + DeckIdCookie.ToString()));
+                Response.Redirect("Default");
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + DeckIdCookie.ToString()));
 
             if (String.IsNullOrEmpty(((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Name")).Text))
             {
@@ -33,7 +37,7 @@ namespace VerbatimWeb
         {
             string DeckIdCookieString = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
             if (string.IsNullOrEmpty(DeckIdCookieString))
-                Response.Redirect("Default.aspx");
+                Response.Redirect("Default");
             Deck.VerbatimDeckId = Int32.Parse(DeckIdCookieString.ToString());
             if (string.IsNullOrEmpty(Deck.IdentifiyngToken))
             {
@@ -59,7 +63,7 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Name is required!" + "')", true);
                 return;
             }
-            string QueryURL = "http://platypuseggs.com/VerbatimService.svc/GetAllDecks";
+            string QueryURL = Utilities.ServerDNS + "/GetAllDecks";
 
             List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
 
@@ -81,7 +85,7 @@ namespace VerbatimWeb
                 }
             }
 
-            QueryURL = "http://platypuseggs.com/VerbatimService.svc/EditDeck";
+            QueryURL = Utilities.ServerDNS + "/EditDeck";
 
             using (var client = new System.Net.WebClient())
             {

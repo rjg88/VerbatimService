@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -11,6 +14,8 @@ namespace VerbatimWeb
 {
     public class Utilities
     {
+        public static readonly string ServerPassword = "PlatypusServerToken35_cgYjqa*345gfdr";
+        public static readonly string ServerDNS = "https://platypuseggs.com/VerbatimService.svc";
         public static MemoryStream MakeGETRequestStream(string uri)
         {
 
@@ -53,6 +58,16 @@ namespace VerbatimWeb
                 return reader.ReadToEnd();
             }
         }
+
+        public static string MakePOSTRequest(string uri, object objectToPost)
+        {
+            HttpClient client = new HttpClient();
+            string JsonToPost = JsonConvert.SerializeObject(objectToPost);
+            HttpResponseMessage response = client.PostAsync(uri, new StringContent(JsonToPost)).Result;
+
+            string responseString = response.Content.ReadAsStringAsync().Result;
+            return responseString;
+        }
         public static String sha256_hash(String value)
         {
             StringBuilder Sb = new StringBuilder();
@@ -67,6 +82,18 @@ namespace VerbatimWeb
             }
 
             return Sb.ToString();
+        }
+
+        public static bool CheckForValidSteamSession(HttpCookie AccessTokenCookie)
+        {
+            if (AccessTokenCookie != null)
+            {
+                if (!string.IsNullOrEmpty(AccessTokenCookie.Values["AccessToken"]))
+                {
+                    return Boolean.Parse(MakeGETRequest(Utilities.ServerDNS + "/VerfiySession?AccessToken=" + HttpUtility.UrlEncode(AccessTokenCookie.Values["AccessToken"].ToString())));
+                }
+            }
+            return false;
         }
     }
 }

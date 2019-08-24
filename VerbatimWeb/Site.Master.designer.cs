@@ -13,6 +13,24 @@ namespace VerbatimWeb {
     public partial class SiteMaster {
         
         /// <summary>
+        /// SteamName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label SteamName;
+        
+        /// <summary>
+        /// SteamImage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image SteamImage;
+        
+        /// <summary>
         /// MainContent control.
         /// </summary>
         /// <remarks>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web;
 
 namespace VerbatimService
@@ -220,7 +221,15 @@ namespace VerbatimService
             SQLiteCommand.ExecuteNonQuery();
 
             SQLiteCommand.CommandText = "select last_insert_rowid()";
-            return Int32.Parse(SQLiteCommand.ExecuteScalar().ToString());
+            int DeckId = Int32.Parse(SQLiteCommand.ExecuteScalar().ToString());
+
+            SQLiteCommand.CommandText = "INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (:SteamID, :VerbatimDeckId)";
+            SQLiteCommand.Parameters.Add("SteamID", DbType.String).Value = Deck.SteamId;
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = DeckId;
+
+            SQLiteCommand.ExecuteNonQuery();
+
+            return DeckId;
         }
         public void DeleteCard(Card Card)
         {
@@ -313,6 +322,115 @@ namespace VerbatimService
             
         }
 
+        public string CreateSession(string SteamId)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+            int UnixTimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            int ExpiryUnixTimeStamp = UnixTimeStamp + 300; // 5 minutes!
+            string Token = GenerateToken();
+
+            SQLiteCommand.CommandText = @"SELECT SessionId
+                                        FROM session
+                                        WHERE SteamId = :SteamId";
+            SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+            object SessionId = SQLiteCommand.ExecuteScalar();
+
+            SQLiteCommand.Parameters.Clear();
+            if (SessionId == null)
+            {
+                SQLiteCommand.CommandText = @"INSERT INTO Session (SteamId, AccessToken, CreatedDate, ExpiryDate)
+                                            VALUES (:SteamId,:AccessToken,:CreatedDate,:ExpiryDate)";
+                SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+                SQLiteCommand.Parameters.Add("AccessToken", DbType.String).Value = Token;
+                SQLiteCommand.Parameters.Add("CreatedDate", DbType.Int32).Value = UnixTimeStamp;
+                SQLiteCommand.Parameters.Add("ExpiryDate", DbType.Int32).Value = ExpiryUnixTimeStamp;
+                SQLiteCommand.ExecuteNonQuery();
+            }
+            else
+            {
+                SQLiteCommand.CommandText = @"UPDATE Session 
+                                            SET AccessToken = :AccessToken,
+                                            CreatedDate = :CreatedDate,
+                                            ExpiryDate = :ExpiryDate
+                                            WHERE SteamId = :SteamId";
+                SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+                SQLiteCommand.Parameters.Add("AccessToken", DbType.String).Value = Token;
+                SQLiteCommand.Parameters.Add("CreatedDate", DbType.Int32).Value = UnixTimeStamp;
+                SQLiteCommand.Parameters.Add("ExpiryDate", DbType.Int32).Value = ExpiryUnixTimeStamp;
+                SQLiteCommand.ExecuteNonQuery();
+            }
+            return Token;
+        }
+
+        public void RefreshAccessToken(string SteamId)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+            int UnixTimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            int ExpiryUnixTimeStamp = UnixTimeStamp + 300; // 5 minutes!
+
+            SQLiteCommand.CommandText = @"SELECT SessionId
+                                        FROM session
+                                        WHERE SteamId = :SteamId";
+            SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+            object SessionId = SQLiteCommand.ExecuteScalar();
+
+            SQLiteCommand.Parameters.Clear();
+            if (SessionId != null)
+            {
+                SQLiteCommand.CommandText = @"UPDATE Session 
+                                            SET ExpiryDate = :ExpiryDate
+                                            WHERE SteamId = :SteamId";
+                SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+                SQLiteCommand.Parameters.Add("ExpiryDate", DbType.Int32).Value = ExpiryUnixTimeStamp;
+                SQLiteCommand.ExecuteNonQuery();
+            }
+            return;
+        }
+
         
+
+        public bool VerfiySession(string AccessToken)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            int UnixTimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+
+            SQLiteCommand.CommandText = @"SELECT SessionId
+                                        FROM Session
+                                        WHERE AccessToken =:AccessToken
+                                        AND ExpiryDate > :ExpiryDate";
+            SQLiteCommand.Parameters.Add("AccessToken", DbType.String).Value = AccessToken;
+            SQLiteCommand.Parameters.Add("ExpiryDate", DbType.Int32).Value = UnixTimeStamp;
+            return SQLiteCommand.ExecuteScalar() != null;
+
+        }
+
+        public bool CheckDeckAccess(string SteamId, int DeckId)
+        {
+            SQLiteCommand = new SQLiteCommand(Connection);
+
+            SQLiteCommand.CommandText = @"SELECT DeckAccessId
+                                        FROM DeckAccess
+                                        WHERE SteamId =:SteamId
+                                        AND VerbatimDeckId = :DeckId";
+            SQLiteCommand.Parameters.Add("SteamId", DbType.String).Value = SteamId;
+            SQLiteCommand.Parameters.Add("DeckId", DbType.Int32).Value = DeckId;
+            return SQLiteCommand.ExecuteScalar() != null;
+
+        }
+
+        private static string GenerateToken()
+        {
+            using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
+            {
+                byte[] tokenData = new byte[32];
+                rng.GetBytes(tokenData);
+
+                string token = Convert.ToBase64String(tokenData);
+                return token;
+
+            }
+        }
     }
 }

@@ -7,8 +7,9 @@
     <a href="SearchDecks" class="btn btn-info mainbtn" role="button">
         <h1>Search for a Deck</h1>
     </a>
-    <a href="CreateDeck" class="btn btn-success mainbtn" role="button">
-        <h1>Create a Deck</h1>
-    </a>
+
+    <asp:button runat="server" OnClick="CreateDeckRedirect" href="CreateDeck" id="CreateDeckButton" class="btn btn-success mainbtn" Font-Size="XX-Large" role="button" Text="Create a Deck"></asp:button>
+
+    <asp:ImageButton ID="SteamLoginButton" runat="server" onclick="SteamLogin" ImageUrl="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/steamworks_docs/english/sits_large_border.png"   ></asp:ImageButton>
 
 </asp:Content>

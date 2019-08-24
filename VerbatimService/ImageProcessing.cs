@@ -14,7 +14,7 @@ namespace VerbatimService
     class ImageProcessing
     {
         private static Font StringFontDesc = new Font("Roboto Medium", 20, FontStyle.Regular);
-        private static Font StringFontCat = new Font("Proxima Nova Soft", 25, FontStyle.Regular);
+        private static Font StringFontCat = new Font("Proxima Nova Soft", 25, FontStyle.Bold);
         private static Font StringFontTitle = new Font("Proxima Nova Soft", 40, FontStyle.Bold);
         private static StringFormat StringFormat = new StringFormat();
         private static StringFormat StringFormatDesc = new StringFormat();
@@ -314,7 +314,7 @@ namespace VerbatimService
 
                 // add title
                 graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
-                                     new Rectangle(15, 35, OutPutImage.Size.Width - 50, 250), StringFormat);
+                                     new Rectangle(15, 15, OutPutImage.Size.Width - 50, 250), StringFormat);
                 // add desc
 
 
@@ -323,11 +323,11 @@ namespace VerbatimService
                     DrawWithRedWords(Card.Description, graphics, OutPutImage, DetectedWords);
                 else
                     graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
-                     new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                     new Rectangle(35, 375, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
 
                 // add category
-                graphics.DrawString(Card.Category, StringFontCat, Brushes.Black,
-                     new Rectangle(35, 740, OutPutImage.Size.Width - 70, 70), StringFormat);
+                graphics.DrawString(Card.Category, StringFontCat, Brushes.DarkBlue,
+                     new Rectangle(35, 275, OutPutImage.Size.Width - 70, 70), StringFormat);
 
 
             }
@@ -446,7 +446,7 @@ namespace VerbatimService
                 }).ToArray();
 
                 StringFormatDesc.SetMeasurableCharacterRanges(ranges);
-                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 300, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 375, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
                 for (int i = 0; i < ranges.Length; i++)
                 {
                     Rectangle WordBounds = Rectangle.Round(regions[i].GetBounds(g));

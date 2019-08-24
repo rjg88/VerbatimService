@@ -57,7 +57,7 @@ namespace VerbatimService
 
         [OperationContract]
         [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
-            BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "SearchForDeck/{Query}")]
+            BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "SearchForDeck?Query={Query}")]
         List<Deck> SearchForDeck(string Query);
 
         [OperationContract]
@@ -99,9 +99,31 @@ namespace VerbatimService
         [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
             BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "RenderCard/{CardId}")]
         Stream RenderCard(string CardId);
+        
+        #region Back Channel
+        [OperationContract]
+        [WebInvoke(Method = "POST", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "CreateSession")]
+        string CreateSession(string SteamId, string ServerPassword);
 
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
+            UriTemplate = "VerfiySession?AccessToken={AccessToken}")]
+        bool VerfiySession(string AccessToken);
+
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "CheckDeckAccess?SteamId={SteamId}&DeckId={DeckId}")]
+        bool CheckDeckAccess(string SteamId, int DeckId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST", ResponseFormat = WebMessageFormat.Json,
+            BodyStyle = WebMessageBodyStyle.Wrapped, UriTemplate = "RefreshAccessToken")]
+        void RefreshAccessToken(string SteamId, string ServerPassword);
+
+        #endregion
     }
 
 
- 
+
 }
