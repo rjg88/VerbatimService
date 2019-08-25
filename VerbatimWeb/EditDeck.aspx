@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit a Deck" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditDeck.aspx.cs" Inherits="VerbatimWeb.EditDeck" %>
+﻿<%@ Page Title="Edit a Deck" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditDeck.aspx.cs" Inherits="VerbatimWeb.EditDeck" validateRequest="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <div class="jumbotron">

@@ -34,7 +34,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" runat="server" href="~/">Verbatim Deck Management</a>
+                    <a class="navbar-brand" runat="server" href="~/Default">Verbatim Deck Management</a>
 
                 </div>
                 <div class="navbar-collapse navbar-right collapse">

@@ -18,29 +18,57 @@ namespace VerbatimDDL
             Connection.Open();
 
 
+            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,1)";
+            //SQLiteCommand.ExecuteNonQuery();
+
+            // SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,17)";
+            //SQLiteCommand.ExecuteNonQuery();
+
             SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,1)";
-            SQLiteCommand.ExecuteNonQuery();
-
-             SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,17)";
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,18)";
             SQLiteCommand.ExecuteNonQuery();
 
             SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,5)";
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,19)";
+            SQLiteCommand.ExecuteNonQuery();
+
+
+            SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,20)";
             SQLiteCommand.ExecuteNonQuery();
 
             SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,22)";
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,21)";
             SQLiteCommand.ExecuteNonQuery();
 
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,9)";
-            SQLiteCommand.ExecuteNonQuery();
 
             SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,10)";
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,23)";
             SQLiteCommand.ExecuteNonQuery();
+
+
+            SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,24)";
+            SQLiteCommand.ExecuteNonQuery();
+
+
+            SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,25)";
+            SQLiteCommand.ExecuteNonQuery();
+
+            //SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,22)";
+            //SQLiteCommand.ExecuteNonQuery();
+
+            //SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,9)";
+            //SQLiteCommand.ExecuteNonQuery();
+
+            //SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,10)";
+            //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
             //SQLiteCommand.CommandText = @"CREATE TABLE Session (SessionId INTEGER PRIMARY KEY, SteamID TEXT NOT NULL, AccessToken TEXT, CreatedDate INT NOT NULL, ExpiryDate INT NOT NULL)";

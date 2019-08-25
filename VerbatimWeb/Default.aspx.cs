@@ -54,6 +54,8 @@ namespace VerbatimWeb
                             UserDataCookie.Expires = DateTime.Now.AddHours(12);
                             Response.Cookies.Add(UserDataCookie);
                             SteamLoginButton.Visible = false;
+                            PleaseLoginText.Visible = false;
+                            MyDecksButton.Visible = false;
                             Response.Redirect("Default", false);
 
                             break;
@@ -69,11 +71,14 @@ namespace VerbatimWeb
                 else
                 {
                     CreateDeckButton.CssClass = "btn btn-success mainbtn disabled";
+                    MyDecksButton.CssClass = "btn btn-primary mainbtn disabled";
                 }
             }
             else
             {
                 SteamLoginButton.Visible = false;
+                PleaseLoginText.Visible = false;
+                MyDecksButton.Visible = true;
             }
         }
 
@@ -92,6 +97,15 @@ namespace VerbatimWeb
         {
             Response.Redirect("CreateDeck", false);
         }
+        protected void MyDecksRedirect(object ender, EventArgs e)
+        {
+            Response.Redirect("MyDecks", false);
+        }
+        protected void SearchDecksRedirect(object ender, EventArgs e)
+        {
+            Response.Redirect("SearchDecks", false);
+        }
+
 
     }
 }

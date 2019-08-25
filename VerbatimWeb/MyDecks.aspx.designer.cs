@@ -10,51 +10,42 @@
 namespace VerbatimWeb {
     
     
-    public partial class _Default {
+    public partial class MyDecks {
         
         /// <summary>
-        /// PleaseLoginText control.
+        /// HiddenDeckId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label PleaseLoginText;
+        protected global::System.Web.UI.WebControls.HiddenField HiddenDeckId;
         
         /// <summary>
-        /// SteamLoginButton control.
+        /// NoResultsFoundContainer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ImageButton SteamLoginButton;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl NoResultsFoundContainer;
         
         /// <summary>
-        /// SearchDecksButton control.
+        /// NoResultsFoundAlert control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button SearchDecksButton;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl NoResultsFoundAlert;
         
         /// <summary>
-        /// CreateDeckButton control.
+        /// DeckResultsGridView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button CreateDeckButton;
-        
-        /// <summary>
-        /// MyDecksButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button MyDecksButton;
+        protected global::System.Web.UI.WebControls.GridView DeckResultsGridView;
     }
 }

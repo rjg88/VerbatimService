@@ -55,12 +55,6 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Description is required!" + "')", true);
                 return;
             }
-            if (string.IsNullOrEmpty(Deck.Password))
-            {
-                ScriptManager.RegisterClientScriptBlock(this, GetType(),
-                            "alertMessage", @"alert('" + "Password is required!" + "')", true);
-                return;
-            }
             if (string.IsNullOrEmpty(Deck.Name))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -88,8 +82,6 @@ namespace VerbatimWeb
             }
 
             QueryURL = Utilities.ServerDNS + "/InsertDeck";
-
-            Deck.Password = Utilities.sha256_hash(Deck.Password); 
 
             using (var client = new System.Net.WebClient())
             {

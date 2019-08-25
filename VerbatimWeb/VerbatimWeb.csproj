@@ -530,6 +530,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="MyDecks.aspx" />
     <Content Include="SearchDecks.aspx" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
@@ -607,6 +608,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CreateSession.cs" />
+    <Compile Include="MyDecks.aspx.cs">
+      <DependentUpon>MyDecks.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDecks.aspx.designer.cs">
+      <DependentUpon>MyDecks.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SearchDecks.aspx.cs">
       <DependentUpon>SearchDecks.aspx</DependentUpon>

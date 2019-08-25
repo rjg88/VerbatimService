@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit a Deck's Cards" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DeckCardsEdit.aspx.cs" Inherits="VerbatimWeb.DeckCardsEdit" %>
+﻿<%@ Page Title="Edit a Deck's Cards" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DeckCardsEdit.aspx.cs" Inherits="VerbatimWeb.DeckCardsEdit" validateRequest="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField runat="server" ID="HiddenDeckId"/>

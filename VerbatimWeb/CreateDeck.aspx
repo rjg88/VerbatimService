@@ -1,4 +1,4 @@
-﻿<%@ Page  Title="Create a Deck" Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="CreateDeck.aspx.cs" Inherits="VerbatimWeb.CreateDeck" %>
+﻿<%@ Page  Title="Create a Deck" Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="CreateDeck.aspx.cs" Inherits="VerbatimWeb.CreateDeck" validateRequest="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -9,7 +9,7 @@
         <InsertItemTemplate>
             <table>
                 <tr>
-                    <td>
+                    <td style="vertical-align:top">
                         <b>Deck Name</b>:
                     </td>
                     <td>
@@ -18,7 +18,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align:top">
                         <b>Description</b>:
                     </td>
                     <td>
@@ -27,7 +27,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align:top">
                         <b>Author</b>:
                     </td>
                     <td>
@@ -36,7 +36,7 @@
                     </td>
                 </tr>
 			    <tr>
-                    <td>
+                    <td style="vertical-align:top">
                         <b>Token to Load on TTS</b>:
                     </td>
                     <td>
@@ -45,16 +45,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <b>Password</b>:
-                    </td>
-                    <td>
-					    <asp:TextBox TextMode="Password" ID="TextBoxPassword" runat="server" Columns="100" Text='<%# Bind("Password") %>' />
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ControlToValidate="TextBoxPassword" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
+                    <td style="vertical-align:top">
                         <b>Point Distribution</b>:
                     </td>
                     <td>
@@ -63,6 +54,13 @@
                             <asp:ListItem Value="true" Text="Standard" />
                         </asp:RadioButtonList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ControlToValidate="RadioDistribution" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
+                    </td>
+                    <td>
+                        The Standard distribution will generate play decks with point values with these percentages: 25%, 25%, 40%, 10%. <br />
+                        If you plan to create a deck that has cards with these point values distributed in roughly these percentages, choose Standard. <br />
+                        If you want the play decks that are generated to pull random cards from the entire deck, choose Random. <br />
+                        <b>If you aren't sure, choose Random.</b>
+                    </td>
                 </tr>
                 <tr>
                     <td>

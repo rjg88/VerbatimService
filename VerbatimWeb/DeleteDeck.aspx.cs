@@ -33,7 +33,7 @@ namespace VerbatimWeb
                 Response.Redirect("Default");
             Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + DeckIdCookieString));
 
-            if(TextBoxDeckName.Text == Deck.Name && (Utilities.sha256_hash(TextBoxPassword.Text) == Deck.Password || TextBoxPassword.Text == Deck.Password))
+            if(TextBoxDeckName.Text == Deck.Name)
             {
                 string QueryURL = Utilities.ServerDNS + "/DeleteDeck";
 
@@ -50,7 +50,7 @@ namespace VerbatimWeb
             else
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
-                    "alertMessage", @"alert('" + "Incorrect Name/Password!" + "')", true);
+                    "alertMessage", @"alert('" + "Incorrect Name!" + "')", true);
             }
 
         }

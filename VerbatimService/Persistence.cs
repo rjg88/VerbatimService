@@ -59,7 +59,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             Deck Deck = new Deck();
-            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, Password, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end) 
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end) 
                         FROM VerbatimDeck  
                         LEFT JOIN VerbatimCard ON VerbatimCard.VerbatimDeckId = VerbatimDeck.VerbatimDeckId 					                        
                         WHERE VerbatimDeck.VerbatimDeckId = :VerbatimDeckId";
@@ -73,13 +73,12 @@ namespace VerbatimService
                     Deck.Description = SQLiteDataReader.GetString(2);
                     Deck.Author = SQLiteDataReader.GetString(3);
                     Deck.IdentifiyngToken = SQLiteDataReader.GetString(4);
-                    Deck.Password = SQLiteDataReader.GetString(5);
-                    Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(6));
-                    Deck.TotalCards = SQLiteDataReader.GetInt32(7);
-                    Deck.OnePointTotalCards = SQLiteDataReader.GetInt32(8);
-                    Deck.TwoPointTotalCards = SQLiteDataReader.GetInt32(9);
-                    Deck.ThreePointTotalCards = SQLiteDataReader.GetInt32(10);
-                    Deck.FourPointTotalCards = SQLiteDataReader.GetInt32(11);
+                    Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(5));
+                    Deck.TotalCards = SQLiteDataReader.GetInt32(6);
+                    Deck.OnePointTotalCards = SQLiteDataReader.GetInt32(7);
+                    Deck.TwoPointTotalCards = SQLiteDataReader.GetInt32(8);
+                    Deck.ThreePointTotalCards = SQLiteDataReader.GetInt32(9);
+                    Deck.FourPointTotalCards = SQLiteDataReader.GetInt32(10);
                 }
             }
             return Deck;
@@ -112,7 +111,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             List<Deck> Decks = new List<Deck>();
-            SQLiteCommand.CommandText = @"SELECT Name, Description, Author, IdentifiyngToken, UseStandardDistribution
+            SQLiteCommand.CommandText = @"SELECT Name, Description, Author, IdentifiyngToken, UseStandardDistribution, VerbatimDeckId
                         FROM VerbatimDeck";
             using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
             {
@@ -124,6 +123,7 @@ namespace VerbatimService
                     Deck.Author = SQLiteDataReader.GetString(2);
                     Deck.IdentifiyngToken = SQLiteDataReader.GetString(3);
                     Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(4));
+                    Deck.VerbatimDeckId = SQLiteDataReader.GetInt32(5);
                     Decks.Add(Deck);
                 }
             }
@@ -208,14 +208,13 @@ namespace VerbatimService
         {
             SQLiteCommand = new SQLiteCommand(Connection);
 
-            SQLiteCommand.CommandText = @"INSERT INTO VerbatimDeck (Name, Description, Author, IdentifiyngToken, Password, UseStandardDistribution)
-                        VALUES (:Name,:Description,:Author,:IdentifiyngToken,:Password, :UseStandardDistribution)";
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimDeck (Name, Description, Author, IdentifiyngToken, UseStandardDistribution)
+                        VALUES (:Name,:Description,:Author,:IdentifiyngToken,:UseStandardDistribution)";
 
             SQLiteCommand.Parameters.Add("Name", DbType.String).Value = Deck.Name;
             SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Deck.Description;
             SQLiteCommand.Parameters.Add("Author", DbType.String).Value = Deck.Author;
             SQLiteCommand.Parameters.Add("IdentifiyngToken", DbType.String).Value = Deck.IdentifiyngToken;
-            SQLiteCommand.Parameters.Add("Password", DbType.String).Value = Deck.Password;
             SQLiteCommand.Parameters.Add("UseStandardDistribution", DbType.String).Value = Deck.UseStandardDistribution;
 
             SQLiteCommand.ExecuteNonQuery();

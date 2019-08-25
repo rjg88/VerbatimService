@@ -25,7 +25,7 @@ namespace VerbatimWeb
 
             Response.Redirect(QueryURL, false);
         }
-        public IQueryable<Card> LoadDeckCards([QueryString("DeckPassword")] string DeckPassword, [QueryString("Filter")]string Filter)
+        public IQueryable<Card> LoadDeckCards([QueryString("Filter")]string Filter)
         {
             object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
             if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))

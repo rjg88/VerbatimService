@@ -54,10 +54,10 @@ namespace VerbatimWeb
             }
 
             Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
-            Name.Text = Deck.Name;
-            Description.Text = Deck.Description;
-            Author.Text = Deck.Author;
-            Token.Text = Deck.IdentifiyngToken;
+            Name.Text = HttpUtility.HtmlEncode(Deck.Name);
+            Description.Text = HttpUtility.HtmlEncode(Deck.Description);
+            Author.Text = HttpUtility.HtmlEncode(Deck.Author);
+            Token.Text = HttpUtility.HtmlEncode(Deck.IdentifiyngToken);
             TotalCards.Text = Deck.TotalCards.ToString();
             Distribution.Text = Deck.UseStandardDistribution ? "Standard" : "Random" ; 
             HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
