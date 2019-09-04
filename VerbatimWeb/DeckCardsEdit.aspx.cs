@@ -91,9 +91,13 @@ namespace VerbatimWeb
             Card.VerbatimDeckId = Int32.Parse(HiddenDeckId.Value.ToString());
             Card.VerbatimCardId = Int32.Parse(e.NewValues["VerbatimCardId"].ToString());
             Card.Title = e.NewValues["Title"].ToString();
-            Card.Description = e.NewValues["Description"].ToString();
+            if (e.NewValues["Description"] != null)
+                Card.Description = e.NewValues["Description"].ToString();
             Card.Category = e.NewValues["Category"].ToString();
             Card.PointValue = Int32.Parse(e.NewValues["PointValue"].ToString());
+            if(e.NewValues["PictureURL"] != null)
+                Card.PictureURL = e.NewValues["PictureURL"].ToString();
+
 
             string QueryURL = Utilities.ServerDNS + "/EditCard";
 
@@ -161,8 +165,8 @@ namespace VerbatimWeb
             if (e.Row.Cells.Count > 1)
             {
                 // hides the Identity columns
-                e.Row.Cells[2].Visible = false;
-                e.Row.Cells[3].Visible = false;
+                //e.Row.Cells[3].Visible = false;
+                //e.Row.Cells[4].Visible = false;
             }
         }
         protected void DeckCardsGridView_DataBound(object sender, GridViewRowEventArgs e)
@@ -191,5 +195,15 @@ namespace VerbatimWeb
         //    }
         //    return -1;
         //}
+        public void LoadImage(Object sender, EventArgs e)
+        {
+            LinkButton btn = (LinkButton)sender;
+            GridViewRow gvr = (GridViewRow)btn.NamingContainer;
+            string QueryURL = Utilities.ServerDNS + "/RenderCard/" + gvr.Cells[3].Text;
+            MemoryStream ms = Utilities.MakeGETRequestStream(QueryURL);
+            string base64Data = Convert.ToBase64String(ms.ToArray());
+            ImageHolder.Src = "data:image/gif;base64," + base64Data;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "RunCode", "hs.htmlExpand(document.getElementById('test'), { contentId: 'highslide-html' });", true);
+        }
     }
 }

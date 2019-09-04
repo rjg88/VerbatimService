@@ -1,6 +1,28 @@
 ﻿<%@ Page Title="Edit a Deck's Cards" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="DeckCardsEdit.aspx.cs" Inherits="VerbatimWeb.DeckCardsEdit" validateRequest="false" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+   <div class="highslide-html-content" id="highslide-html">
+	    <div class="highslide-header">
+		    <ul>
+			    <li class="highslide-move">
+				    <a href="#" onclick="return false">Move</a>
+			    </li>
+			    <li class="highslide-close">
+				    <a href="#" onclick="return hs.close(this)">Close</a>
+			    </li>
+		    </ul>
+	    </div>
+	    <div class="highslide-body">
+		        <img style="width:100%; height:100%" runat="server" id="ImageHolder" src="tbd" alt="Preview a Card" />
+	    </div>
+        <div class="highslide-footer">
+        <div>
+            <span class="highslide-resize" title="Resize">
+                <span></span>
+            </span>
+        </div>
+        </div>
+    </div>
     <asp:HiddenField runat="server" ID="HiddenDeckId"/>
 
 	<br />
@@ -15,6 +37,7 @@
 		OnRowCreated="DeckCardsGridView_RowCreated"
 		DeleteMethod="DeleteCard"
 		InsertMethod="InsertCard"
+        CancelMethod="LoadImage"
   SelectMethod ="LoadDeckCards" 
   autogeneratecolumns="true"
 		OnRowUpdating="EditCard"
@@ -32,8 +55,14 @@
 		
   runat="server">
     <Columns>
-		<asp:CommandField ButtonType="Link" ShowEditButton="True"
-     ControlStyle-CssClass="btn btn-warning" />
+    <asp:TemplateField>
+        <ItemTemplate>
+            <asp:LinkButton ControlStyle-CssClass="btn btn-primary" runat="server" ID="PreviewButton" Text="Preview" OnClick="LoadImage">
+            </asp:LinkButton>
+        </ItemTemplate>
+    </asp:TemplateField>
+        <asp:CommandField ButtonType="Link" ShowEditButton="True" EditText="Edit"
+     ControlStyle-CssClass="btn btn-warning" />		
 		
 <asp:TemplateField>
   <ItemTemplate>

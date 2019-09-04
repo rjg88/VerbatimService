@@ -4,6 +4,7 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace VerbatimService
         {
             Initialize(); 
 
-            DeleteOldFiles();
+            //DeleteOldFiles();
 
             if (string.IsNullOrEmpty(Token))
                 DeckId = 1;
@@ -107,7 +108,7 @@ namespace VerbatimService
             //AND PointValue = 1
             //AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
             //ORDER BY RANDOM() LIMIT 10
-            string TemplateSQLRandom = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, 0 as rowOrder, RANDOM() as Random
+            string TemplateSQLRandom = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, PictureURL, 0 as rowOrder, RANDOM() as Random
 								FROM VerbatimCard 
 								LEFT JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
@@ -115,7 +116,7 @@ namespace VerbatimService
 								WHERE VerbatimDeckId = {2}
 								AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
 								UNION
-								SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, COUNT(*) as rowOrder, RANDOM() as Random
+								SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, PictureURL, COUNT(*) as rowOrder, RANDOM() as Random
 								FROM VerbatimCard 
 								INNER JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
@@ -126,7 +127,7 @@ namespace VerbatimService
                                 LIMIT {1}";
 
 
-            string TemplateSQL = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, 0 as rowOrder, RANDOM() as Random
+            string TemplateSQL = @"		SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, PictureURL, 0 as rowOrder, RANDOM() as Random
 								FROM VerbatimCard 
 								LEFT JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
@@ -135,7 +136,7 @@ namespace VerbatimService
 								AND PointValue = {1}   
 								AND VerbatimCardPlayHistory.VerbatimCardId IS NULL
 								UNION
-								SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, COUNT(*) as rowOrder, RANDOM() as Random
+								SELECT VerbatimCard.VerbatimCardId, Title, Description, Category, PointValue, PictureURL, COUNT(*) as rowOrder, RANDOM() as Random
 								FROM VerbatimCard 
 								INNER JOIN VerbatimCardPlayHistory
 								ON VerbatimCardPlayHistory.VerbatimCardId = VerbatimCard.VerbatimCardId
@@ -162,6 +163,8 @@ namespace VerbatimService
                             Card.Description = SQLiteDataReader.GetString(2);
                             Card.Category = SQLiteDataReader.GetString(3);
                             Card.PointValue = SQLiteDataReader.GetInt32(4);
+                            if(!SQLiteDataReader.IsDBNull(5))
+                                Card.PictureURL = SQLiteDataReader.GetString(5);
                             CardObjects.Add(Card);
 
                             string UpsertSQLSelect = @"SELECT VerbatimCardId
@@ -210,6 +213,8 @@ namespace VerbatimService
                         Card.Description = SQLiteDataReader.GetString(2);
                         Card.Category = SQLiteDataReader.GetString(3);
                         Card.PointValue = SQLiteDataReader.GetInt32(4);
+                        if (!SQLiteDataReader.IsDBNull(5))
+                            Card.PictureURL = SQLiteDataReader.GetString(5);
                         CardObjects.Add(Card);
 
                         string UpsertSQLSelect = @"SELECT VerbatimCardId
@@ -312,23 +317,57 @@ namespace VerbatimService
             {
                 //                graphics.DrawString("testtesttesttesttesttesttesttesttestt esttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttes ttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttes ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest ttesttesttesttest end", StringFontDesc, Brushes.Black,
 
-                // add title
-                graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
-                                     new Rectangle(15, 15, OutPutImage.Size.Width - 50, 250), StringFormat);
+
                 // add desc
+                int x, y, width, height;
+                x = y = width = height = 0;
+                if (string.IsNullOrEmpty(Card.PictureURL))
+                {
+                    // add title
+                    graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
+                                         new Rectangle(15, 115, OutPutImage.Size.Width - 50, 250), StringFormat);
 
+                    x = 35; y = 445; width = OutPutImage.Size.Width - 70; height = 500;
+                    List<string> DetectedWords = DetectWordInString(Card.Description, Card.Title);
+                    if (DetectedWords.Count > 0)
+                        DrawWithRedWords(Card.Description, graphics, OutPutImage, DetectedWords, x, y, width, height);
+                    else
+                        graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
+                         new Rectangle(x,y,width,height), StringFormatDesc);
 
-                List<string> DetectedWords = DetectWordInString(Card.Description, Card.Title);
-                if (DetectedWords.Count > 0)
-                    DrawWithRedWords(Card.Description, graphics, OutPutImage, DetectedWords);
+                    // add category
+                    graphics.DrawString(Card.Category, StringFontCat, Brushes.DarkBlue,
+                         new Rectangle(35, 345, OutPutImage.Size.Width - 70, 70), StringFormat);
+                }
                 else
-                    graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
-                     new Rectangle(35, 375, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                {
+                    // add title
+                    graphics.DrawString(Card.Title, StringFontTitle, Brushes.Black,
+                                         new Rectangle(15, 20, OutPutImage.Size.Width - 50, 250), StringFormat);
 
-                // add category
-                graphics.DrawString(Card.Category, StringFontCat, Brushes.DarkBlue,
-                     new Rectangle(35, 275, OutPutImage.Size.Width - 70, 70), StringFormat);
+                    x = 35; y = 600; width = OutPutImage.Size.Width - 70; height = 500;
 
+                    try
+                    {
+                        WebClient client = new WebClient();
+                        Stream stream = client.OpenRead(Card.PictureURL);
+                        Bitmap bitmap = new Bitmap(stream);
+                        graphics.DrawImage(bitmap, 169, 210, 325, 325);
+                    }
+                    catch
+                    {
+
+                    }
+                    List<string> DetectedWords = DetectWordInString(Card.Description, Card.Title);
+                    if (DetectedWords.Count > 0)
+                        DrawWithRedWords(Card.Description, graphics, OutPutImage, DetectedWords, x,y,width,height);
+                    else
+                        graphics.DrawString(Card.Description, StringFontDesc, Brushes.Black,
+                         new Rectangle(x,y,width,height), StringFormatDesc);
+
+                    graphics.DrawString(Card.Category, StringFontCat, Brushes.DarkBlue,
+                         new Rectangle(35, 525, OutPutImage.Size.Width - 70, 70), StringFormat);
+                }
 
             }
             return OutPutImage;
@@ -424,7 +463,7 @@ namespace VerbatimService
 
         }
 
-        private static void DrawWithRedWords(string words, Graphics g, Image OutPutImage, List<string> RedWords)
+        private static void DrawWithRedWords(string words, Graphics g, Image OutPutImage, List<string> RedWords, int x, int y, int width, int height)
         {
             TextFormatFlags flags = TextFormatFlags.Left
             | TextFormatFlags.NoPadding
@@ -446,7 +485,7 @@ namespace VerbatimService
                 }).ToArray();
 
                 StringFormatDesc.SetMeasurableCharacterRanges(ranges);
-                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(35, 375, OutPutImage.Size.Width - 70, 500), StringFormatDesc);
+                Region[] regions = g.MeasureCharacterRanges(words, StringFontDesc, new Rectangle(x, y, width, height), StringFormatDesc);
                 for (int i = 0; i < ranges.Length; i++)
                 {
                     Rectangle WordBounds = Rectangle.Round(regions[i].GetBounds(g));

@@ -21,5 +21,8 @@ namespace VerbatimService
         public string Category { get; set; }
         [DataMember]
         public int PointValue { get; set; }
+        [DataMember]
+        public string PictureURL { get; set; }
+
     }
 }

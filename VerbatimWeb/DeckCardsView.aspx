@@ -21,7 +21,7 @@
                 <span></span>
             </span>
         </div>
-    </div>
+        </div>
     </div>
     <asp:HiddenField runat="server" ID="HiddenDeckId"/>
     <br />

@@ -15,13 +15,16 @@ namespace VerbatimService
 
         public void EditCard(Card Card)
         {
+            if (Card.Description == null)
+                Card.Description = "";
             SQLiteCommand = new SQLiteCommand(Connection);
 
             SQLiteCommand.CommandText = @"UPDATE VerbatimCard
                            SET Title = :Title,
                                Description = :Description,
                                Category = :Category,
-                               PointValue = :PointValue
+                               PointValue = :PointValue,
+                               PictureURL = :PictureURL
                          WHERE VerbatimCardId = :VerbatimCardId";
 
             SQLiteCommand.Parameters.Add("Title", DbType.String).Value = Card.Title;
@@ -29,7 +32,8 @@ namespace VerbatimService
             SQLiteCommand.Parameters.Add("Category", DbType.String).Value = Card.Category;
             SQLiteCommand.Parameters.Add("PointValue", DbType.String).Value = Card.PointValue;
             SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = Card.VerbatimCardId;
-
+            SQLiteCommand.Parameters.Add("PictureURL", DbType.String).Value = Card.PictureURL;
+            
             SQLiteCommand.ExecuteNonQuery();
         }
 
@@ -89,7 +93,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             Card Card = new Card();
-            SQLiteCommand.CommandText = @"SELECT Title, Description, Category, PointValue
+            SQLiteCommand.CommandText = @"SELECT Title, Description, Category, PointValue, PictureURL
                         FROM VerbatimCard
                         WHERE VerbatimCardId = :VerbatimCardId";
             SQLiteCommand.Parameters.Add("VerbatimCardId", DbType.String).Value = CardId;
@@ -101,6 +105,8 @@ namespace VerbatimService
                     Card.Description = SQLiteDataReader.GetString(1);
                     Card.Category = SQLiteDataReader.GetString(2);
                     Card.PointValue = SQLiteDataReader.GetInt32(3);
+                    if (!SQLiteDataReader.IsDBNull(4))
+                        Card.PictureURL = SQLiteDataReader.GetString(4);
                 }
             }
             return Card;
@@ -111,8 +117,10 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             List<Deck> Decks = new List<Deck>();
-            SQLiteCommand.CommandText = @"SELECT Name, Description, Author, IdentifiyngToken, UseStandardDistribution, VerbatimDeckId
-                        FROM VerbatimDeck";
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken, VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId, COUNT(*)
+                        FROM VerbatimDeck
+                        LEFT JOIN VerbatimCard ON VerbatimCard.VerbatimDeckId = VerbatimDeck.VerbatimDeckId
+                        GROUP BY VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken,VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId";
             using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
             {
                 while (SQLiteDataReader.Read())
@@ -124,6 +132,7 @@ namespace VerbatimService
                     Deck.IdentifiyngToken = SQLiteDataReader.GetString(3);
                     Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(4));
                     Deck.VerbatimDeckId = SQLiteDataReader.GetInt32(5);
+                    Deck.TotalCards = SQLiteDataReader.GetInt32(6);
                     Decks.Add(Deck);
                 }
             }
@@ -135,7 +144,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             List<Card> DeckCards = new List<Card>();
-            SQLiteCommand.CommandText = @"SELECT VerbatimCardId, Title, Description, Category, PointValue
+            SQLiteCommand.CommandText = @"SELECT VerbatimCardId, Title, Description, Category, PointValue, PictureURL
                         FROM VerbatimCard
                         WHERE VerbatimDeckId = :VerbatimDeckId
                         AND (
@@ -156,6 +165,9 @@ namespace VerbatimService
                     Card.Description = SQLiteDataReader.GetString(2);
                     Card.Category = SQLiteDataReader.GetString(3);
                     Card.PointValue = SQLiteDataReader.GetInt32(4);
+                    if(!SQLiteDataReader.IsDBNull(5))
+                        Card.PictureURL = SQLiteDataReader.GetString(5);
+
                     DeckCards.Add(Card);
                 }
             }
@@ -193,14 +205,15 @@ namespace VerbatimService
         {
             SQLiteCommand = new SQLiteCommand(Connection);
 
-            SQLiteCommand.CommandText = @"INSERT INTO VerbatimCard (VerbatimDeckId, Title, Description, Category, PointValue)
-                        VALUES (:VerbatimDeckId,:Title,:Description,:Category,:PointValue)";
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimCard (VerbatimDeckId, Title, Description, Category, PointValue, PictureURL)
+                        VALUES (:VerbatimDeckId,:Title,:Description,:Category,:PointValue,:PictureURL)";
 
             SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Card.VerbatimDeckId;
             SQLiteCommand.Parameters.Add("Title", DbType.String).Value = Card.Title;
             SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Card.Description;
             SQLiteCommand.Parameters.Add("Category", DbType.String).Value = Card.Category;
             SQLiteCommand.Parameters.Add("PointValue", DbType.String).Value = Card.PointValue;
+            SQLiteCommand.Parameters.Add("PictureURL", DbType.String).Value = Card.PictureURL;
 
             SQLiteCommand.ExecuteNonQuery();
         }
@@ -250,6 +263,11 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             SQLiteCommand.CommandText = @"DELETE FROM VerbatimCard
+                                           WHERE  VerbatimDeckId = :VerbatimDeckId";
+            SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Deck.VerbatimDeckId;
+            SQLiteCommand.ExecuteNonQuery();
+
+            SQLiteCommand.CommandText = @"DELETE FROM DeckAccess
                                            WHERE  VerbatimDeckId = :VerbatimDeckId";
             SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Deck.VerbatimDeckId;
             SQLiteCommand.ExecuteNonQuery();
@@ -365,7 +383,7 @@ namespace VerbatimService
         {
             SQLiteCommand = new SQLiteCommand(Connection);
             int UnixTimeStamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            int ExpiryUnixTimeStamp = UnixTimeStamp + 300; // 5 minutes!
+            int ExpiryUnixTimeStamp = UnixTimeStamp + (3600 * 12); // 12 hours!
 
             SQLiteCommand.CommandText = @"SELECT SessionId
                                         FROM session

@@ -41,6 +41,7 @@ namespace VerbatimService
 
         public void EditDeck(Deck Deck)
         {
+
             Initialize();
             Persistence.EditDeck(Deck);
         }

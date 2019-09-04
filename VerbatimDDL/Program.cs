@@ -17,58 +17,22 @@ namespace VerbatimDDL
             SQLiteConnection Connection = new SQLiteConnection("Data Source=" + "C" + @":\Verbatim\Verbatim.sqlite;Version=3;");
             Connection.Open();
 
-
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,1)";
+            //SQLiteCommand.CommandText = @"UPDATE VerbatimDeck SET VerbatimDeckID = 1 WHERE VerbatimDeckID = 28 ";
             //SQLiteCommand.ExecuteNonQuery();
 
-            // SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,17)";
+            //SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"UPDATE VerbatimCArd SET VerbatimDeckID = 1 WHERE VerbatimDeckID = 28 ";
+            //SQLiteCommand.ExecuteNonQuery();
+
+
+            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"ALTER TABLE VerbatimCard ADD PictureURL TEXT ";
             //SQLiteCommand.ExecuteNonQuery();
 
             SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,18)";
+            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,1)";
             SQLiteCommand.ExecuteNonQuery();
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,19)";
-            SQLiteCommand.ExecuteNonQuery();
-
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,20)";
-            SQLiteCommand.ExecuteNonQuery();
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,21)";
-            SQLiteCommand.ExecuteNonQuery();
-
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,23)";
-            SQLiteCommand.ExecuteNonQuery();
-
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,24)";
-            SQLiteCommand.ExecuteNonQuery();
-
-
-            SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,25)";
-            SQLiteCommand.ExecuteNonQuery();
-
-            //SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198063607552,22)";
-            //SQLiteCommand.ExecuteNonQuery();
-
-            //SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,9)";
-            //SQLiteCommand.ExecuteNonQuery();
-
-            //SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198059796308,10)";
-            //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
             //SQLiteCommand.CommandText = @"CREATE TABLE Session (SessionId INTEGER PRIMARY KEY, SteamID TEXT NOT NULL, AccessToken TEXT, CreatedDate INT NOT NULL, ExpiryDate INT NOT NULL)";
