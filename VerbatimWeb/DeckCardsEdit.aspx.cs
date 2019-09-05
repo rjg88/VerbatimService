@@ -165,17 +165,17 @@ namespace VerbatimWeb
             if (e.Row.Cells.Count > 1)
             {
                 // hides the Identity columns
-                //e.Row.Cells[3].Visible = false;
-                //e.Row.Cells[4].Visible = false;
+                e.Row.Cells[3].Visible = false;
+                e.Row.Cells[4].Visible = false;
             }
         }
         protected void DeckCardsGridView_DataBound(object sender, GridViewRowEventArgs e)
         {
             if ((e.Row.RowState & DataControlRowState.Edit) > 0)
             {
-                ((TextBox)e.Row.Cells[5].Controls[0]).TextMode = TextBoxMode.MultiLine;
-                ((TextBox)e.Row.Cells[5].Controls[0]).Rows = 10;
-                ((TextBox)e.Row.Cells[5].Controls[0]).Columns = 100;
+                ((TextBox)e.Row.Cells[6].Controls[0]).TextMode = TextBoxMode.MultiLine;
+                ((TextBox)e.Row.Cells[6].Controls[0]).Rows = 10;
+                ((TextBox)e.Row.Cells[6].Controls[0]).Columns = 100;
 
             }
 
