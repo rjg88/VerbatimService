@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -23,14 +24,15 @@ namespace VerbatimService
         private static Image TemplateImage2;
         private static Image TemplateImage3;
         private static Image TemplateImage4;
+        private static Image TemplateImage5;
         private static List<Bitmap> CardImages = new List<Bitmap>();
-        private static List<float> Distribution = new List<float> { 0.25f, 0.4f, 0.25f, 0.1f };
+        private static List<float> Distribution = new List<float> { 0.25f, 0.4f, 0.25f, 0.05f, 0.05f };
         public SQLiteConnection Connection;
         private int UnixTimeStamp;
         public static string DriveLetter;
 
         public static List<string> NotConflictRedWords = new List<string> {"its","it's","at","her","what","who","your","we're", "you're", "they're", "i'm", "by", "their", "than", "it", "as", "they", "you", "his", "&", "from", "with", "in", "of", "on", "you", "too", "to", "that", "the", "and", "but", "for", "nor", "or", "so", "yet", "a", "an", "be", "am", "are", "is", "was", "were", "being", "been", "can", "could", "dare", "do", "does", "did", "have", "has", "had", "having", "may", "might", "must", "need", "ought", "shall", "should", "will", "would" };
-        public static List<char> SpecialCharacters = new List<char>() { '.', '-', ' ', '\t', '\n', '\r' };
+        public static List<char> SpecialCharacters = new List<char>() { ',', '.', '-', ' ', '\t', '\n', '\r' };
         public static string SpecialCharactersForWeirdRegexThing = @"(?<=[\s.\-])";
         private static readonly int CardWidth = 663;
         private static readonly int CardHeight = 1001;
@@ -68,7 +70,7 @@ namespace VerbatimService
             }
 
             Bitmap SheetBitMap = CreateSheetFromCards();
-            string FileName = DateTime.Now.ToString("MM-dd-yyyy-HH：mm：ss") + ".png";
+            string FileName = DateTime.Now.ToString("MM-dd-yyyy-HH：mm：ss") + ".jpg";
             string CurrentDirectory = "";
             if (DeckId == 1)
                 CurrentDirectory = DriveLetter + @":\inetpub\wwwroot\Verbatim\Sheets\Original\";
@@ -82,7 +84,7 @@ namespace VerbatimService
 
             string FullPictureFileName = CurrentDirectory + "\\" + FileName;
 
-            SheetBitMap.Save(FullPictureFileName);
+            SheetBitMap.Save(FullPictureFileName, ImageFormat.Jpeg);
 
             return FileName;
         }
@@ -271,10 +273,11 @@ namespace VerbatimService
 
         public void Initialize()
         {
-            TemplateImage1 = Image.FromFile(DriveLetter + @":\Verbatim\Template1.png");
-            TemplateImage2 = Image.FromFile(DriveLetter + @":\Verbatim\Template2.png");
-            TemplateImage3 = Image.FromFile(DriveLetter + @":\Verbatim\Template3.png");
-            TemplateImage4 = Image.FromFile(DriveLetter + @":\Verbatim\Template4.png");
+            TemplateImage1 = Image.FromFile(DriveLetter + @":\Verbatim\Template1.jpg");
+            TemplateImage2 = Image.FromFile(DriveLetter + @":\Verbatim\Template2.jpg");
+            TemplateImage3 = Image.FromFile(DriveLetter + @":\Verbatim\Template3.jpg");
+            TemplateImage4 = Image.FromFile(DriveLetter + @":\Verbatim\Template4.jpg");
+            TemplateImage5 = Image.FromFile(DriveLetter + @":\Verbatim\Template5.jpg");
 
             StringFormat.LineAlignment = StringAlignment.Center;
             StringFormat.Alignment = StringAlignment.Center;
@@ -310,6 +313,8 @@ namespace VerbatimService
                 OutPutImage = new Bitmap(TemplateImage3);
             else if (Card.PointValue == 4)
                 OutPutImage = new Bitmap(TemplateImage4);
+            else if (Card.PointValue == 5)
+                OutPutImage = new Bitmap(TemplateImage5);
             else
                 return null;
 

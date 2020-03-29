@@ -48,7 +48,7 @@
                         <b>Point Distribution</b>:
                     </td>
                     <td>
-                        <asp:RadioButtonList runat="server" ID="RadioDistribution" SelectedValue='<%# Bind("MyRblField") %>'>
+                        <asp:RadioButtonList runat="server" ID="RadioDistribution" SelectedValue='<%# Bind("UseStandardDistribution") %>'>
                             <asp:ListItem Value="false" Text="Random" />
                             <asp:ListItem Value="true" Text="Standard" />
                         </asp:RadioButtonList>

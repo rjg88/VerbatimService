@@ -17,7 +17,8 @@ namespace VerbatimDDL
             SQLiteConnection Connection = new SQLiteConnection("Data Source=" + "C" + @":\Verbatim\Verbatim.sqlite;Version=3;");
             Connection.Open();
 
-            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            
             //SQLiteCommand.CommandText = @"UPDATE VerbatimDeck SET VerbatimDeckID = 1 WHERE VerbatimDeckID = 28 ";
             //SQLiteCommand.ExecuteNonQuery();
 
@@ -31,7 +32,7 @@ namespace VerbatimDDL
             //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,1)";
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,29)";
             //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
@@ -100,23 +101,31 @@ namespace VerbatimDDL
             //        File.AppendAllText(@"C:\Verbatim\test\historyTEst.txt", SQLiteDataReader.GetString(0) + "|" + SQLiteDataReader.GetString(1) + "\n");
             //    }
             //}
-            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
 
-            foreach (string line in File.ReadAllLines(@"C:\Verbatim\test\historyTEst.txt"))
+            //foreach (string line in File.ReadAllLines(@"C:\Verbatim\test\historyTEst.txt"))
+            //{
+            //    List<string> vals = line.Split('|').ToList();
+            //    // select card by title
+            //    SQLiteCommand.CommandText = @"Select VerbatimCardId from VerbatimCard where VerbatimDeckId = 1 AND VerbatimCard.title = '" + vals[0].Replace("'", "''") + "'";
+            //    var val = SQLiteCommand.ExecuteScalar();
+            //    string VerbatimCardId;
+            //    if (val != null)
+            //    {
+            //        VerbatimCardId = val.ToString();
+            //        //insert
+            //        SQLiteCommand.CommandText = @"INSERT INTO VerbatimCardPlayHistory (VerbatimCardId, SteamId) VALUES (" + VerbatimCardId + ", " + vals[1] + ")";
+            //        SQLiteCommand.ExecuteNonQuery();
+            //    }
+
+            //export vanilla deck to CSV quotes are escaped as ""
+            SQLiteCommand.CommandText = @"Select * from VerbatimCard where VerbatimDeckId = 1";
+            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
             {
-                List<string> vals = line.Split('|').ToList();
-                // select card by title
-                SQLiteCommand.CommandText = @"Select VerbatimCardId from VerbatimCard where VerbatimDeckId = 1 AND VerbatimCard.title = '" + vals[0].Replace("'", "''") + "'";
-                var val = SQLiteCommand.ExecuteScalar();
-                string VerbatimCardId;
-                if (val != null)
+                while (SQLiteDataReader.Read())
                 {
-                    VerbatimCardId = val.ToString();
-                    //insert
-                    SQLiteCommand.CommandText = @"INSERT INTO VerbatimCardPlayHistory (VerbatimCardId, SteamId) VALUES (" + VerbatimCardId + ", " + vals[1] + ")";
-                    SQLiteCommand.ExecuteNonQuery();
+                    File.AppendAllText(@"C:\Verbatim\test\DeckForHael.csv", "\"" + SQLiteDataReader.GetInt32(0) + "\",\"" + SQLiteDataReader.GetInt32(1) + "\",\"" + SQLiteDataReader.GetString(2).Replace("\n", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(3).Replace("\n", "").Replace("\r", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(4).Replace("\n", "") + "\",\"" + SQLiteDataReader.GetInt32(5) + "\",\"" + SQLiteDataReader.GetValue(6).ToString().Replace("\n", "") + "\"\n");
                 }
-
             }
 
         }

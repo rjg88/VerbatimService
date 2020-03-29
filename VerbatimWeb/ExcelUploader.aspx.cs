@@ -59,7 +59,7 @@ namespace VerbatimWeb
                 Card.Description = LineValues[1].ToString();
                 Card.Category = LineValues[2].ToString();
                 Card.PointValue = Int32.Parse(LineValues[3].ToString());
-                if(LineValues[4] != null)
+                if(LineValues.Count > 4 && LineValues[4] != null)
                     Card.PictureURL = LineValues[4].ToString();
 
                 using (var client = new System.Net.WebClient())
