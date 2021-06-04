@@ -65,8 +65,8 @@ namespace VerbatimWeb
             DeckIdCookie.Expires = DateTime.Now.AddHours(24);
             Response.Cookies.Add(DeckIdCookie);
 
-            double[] yValues = { Deck.OnePointTotalCards, Deck.TwoPointTotalCards, Deck.ThreePointTotalCards, Deck.FourPointTotalCards};
-            string[] xValues = { "1", "2", "3", "4" };
+            double[] yValues = { Deck.OnePointTotalCards, Deck.TwoPointTotalCards, Deck.ThreePointTotalCards, Deck.FourPointTotalCards, Deck.FivePointTotalCards};
+            string[] xValues = { "1", "2", "3", "4", "5" };
 
             Chart1.Series["Default"].Points.DataBindXY(xValues, yValues);
 
@@ -74,6 +74,7 @@ namespace VerbatimWeb
             Chart1.Series["Default"].Points[1].Color = Color.Navy;
             Chart1.Series["Default"].Points[2].Color = Color.OrangeRed;
             Chart1.Series["Default"].Points[3].Color = Color.Black;
+            Chart1.Series["Default"].Points[4].Color = Color.Gold;
 
             Chart1.Series["Default"].ChartType = SeriesChartType.Pie;
             Chart1.Series["Default"]["PieLabelStyle"] = "Disabled";

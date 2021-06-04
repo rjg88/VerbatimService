@@ -286,7 +286,6 @@ namespace VerbatimService
             StringFormatDesc.Alignment = StringAlignment.Center;
             StringFormatDesc.Trimming = StringTrimming.None;
             StringFormatDesc.FormatFlags = StringFormatFlags.MeasureTrailingSpaces
-            | StringFormatFlags.NoFontFallback
             | StringFormatFlags.FitBlackBox;
 
 

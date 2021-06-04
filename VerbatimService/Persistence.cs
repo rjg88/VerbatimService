@@ -63,7 +63,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             Deck Deck = new Deck();
-            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end) 
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end), sum(case when pointvalue = 5 then 1 else 0 end) 
                         FROM VerbatimDeck  
                         LEFT JOIN VerbatimCard ON VerbatimCard.VerbatimDeckId = VerbatimDeck.VerbatimDeckId 					                        
                         WHERE VerbatimDeck.VerbatimDeckId = :VerbatimDeckId";
@@ -83,6 +83,7 @@ namespace VerbatimService
                     Deck.TwoPointTotalCards = SQLiteDataReader.GetInt32(8);
                     Deck.ThreePointTotalCards = SQLiteDataReader.GetInt32(9);
                     Deck.FourPointTotalCards = SQLiteDataReader.GetInt32(10);
+                    Deck.FivePointTotalCards = SQLiteDataReader.GetInt32(10);
                 }
             }
             return Deck;

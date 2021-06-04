@@ -27,6 +27,8 @@ namespace VerbatimService
         [DataMember]
         public int TotalCards{ get; set; }
         [DataMember]
+        public int FivePointTotalCards { get; set; }
+        [DataMember]
         public int FourPointTotalCards { get; set; }
         [DataMember]
         public int ThreePointTotalCards { get; set; }
