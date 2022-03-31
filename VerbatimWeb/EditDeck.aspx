@@ -34,6 +34,15 @@
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="TextBoxAuthor" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <b>Language</b>:
+                    </td>
+                    <td>
+                        <asp:TextBox ID="TextBoxLanguage" runat="server" Columns="100" Text='<%# Bind("Language") %>' />
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ControlToValidate="TextBoxLanguage" ErrorMessage="*" ForeColor="Red" Font-Size="X-Large"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
 			    <tr>
                     <td>
                         <b>Token to Load on TTS</b>:

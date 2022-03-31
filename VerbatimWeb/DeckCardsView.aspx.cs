@@ -14,24 +14,21 @@ namespace VerbatimWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                Response.Redirect("Default");
 
         }
         protected void ButtonFilter_Click(object sender, EventArgs e)
         {
-            string QueryURL = "DeckCardsView.aspx?filter=" + FilterInputBox.Text;
+            string QueryURL = "DeckCardsView.aspx?DeckId=" + HiddenDeckId.Value + "&filter=" + FilterInputBox.Text;
 
             Response.Redirect(QueryURL, false);
         }
         public IQueryable<Card> LoadDeckCards([QueryString("Filter")]string Filter)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                return null;
+            string DeckId = Request.QueryString["DeckId"];
 
-            string DeckId = DeckIdCookie.ToString();
+            if (DeckId == null)
+                return null;
+            
             if (Filter == null)
                 Filter = "";
             string QueryURL = Utilities.ServerDNS + "/GetDeckCards/" + DeckId + "?filter=" + Filter;

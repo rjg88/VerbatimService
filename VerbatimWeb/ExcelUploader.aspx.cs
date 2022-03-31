@@ -24,16 +24,14 @@ namespace VerbatimWeb
 
                 Response.Redirect("Default");
             }
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
+            if (Request.QueryString["DeckId"] == null)
                 Response.Redirect("Default");
         }
         protected void ButtonUpload_Click(object sender, EventArgs e)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                return;
-            string DeckId = DeckIdCookie.ToString();
+            if (Request.QueryString["DeckId"] == null)
+                Response.Redirect("Default");
+            string DeckId = Request.QueryString["DeckId"];
             if (!FileUploadCSV.FileName.EndsWith(".csv") && !FileUploadCSV.FileName.EndsWith(".tsv"))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -76,7 +74,7 @@ namespace VerbatimWeb
             }
             reader.Close();
 
-            Response.Redirect("DeckCardsView.aspx");
+            Response.Redirect("DeckCardsView.aspx?DeckId=" + Request.QueryString["DeckId"]);
         }
     }
 }

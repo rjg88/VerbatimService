@@ -20,18 +20,13 @@ namespace VerbatimWeb
                 myCookie.Expires = DateTime.Now.AddHours(-1);
                 Response.Cookies.Add(myCookie); Response.Redirect("Default");
             }
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
+            if (Request.QueryString["DeckId"] == null)
                 Response.Redirect("Default");
-
         }
 
         public void ButtonDelete_Click(object sender, EventArgs e)
         {
-            string DeckIdCookieString = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
-            if (string.IsNullOrEmpty(DeckIdCookieString))
-                Response.Redirect("Default");
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + DeckIdCookieString));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
 
             if(TextBoxDeckName.Text == Deck.Name)
             {
@@ -40,10 +35,6 @@ namespace VerbatimWeb
                 using (var client = new System.Net.WebClient())
                 {
                     byte[] response = client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Deck)));
-                    HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-                    DeckIdCookie.Values.Add("VerbatimDeckId", client.Encoding.GetString(response));
-                    DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-                    Response.Cookies.Add(DeckIdCookie);
                 }
                 Response.Redirect("Default");
             }

@@ -35,15 +35,15 @@ namespace VerbatimWeb
             {
                 // hides the Identity columns
                 e.Row.Cells[1].Visible = false;
-                e.Row.Cells[5].Visible = false;
                 e.Row.Cells[6].Visible = false;
                 e.Row.Cells[7].Visible = false;
-                e.Row.Cells[8].Visible = false;
                 e.Row.Cells[9].Visible = false;
                 e.Row.Cells[10].Visible = false;
                 e.Row.Cells[11].Visible = false;
                 e.Row.Cells[12].Visible = false;
                 e.Row.Cells[13].Visible = false;
+                e.Row.Cells[14].Visible = false;
+                e.Row.Cells[15].Visible = false;
 
             }
         }

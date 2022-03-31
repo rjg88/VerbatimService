@@ -18,10 +18,9 @@ namespace VerbatimWeb
             {
                 Response.Redirect("Default");
             }
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
+            if (Request.QueryString["DeckId"] == null)
                 Response.Redirect("Default");
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + DeckIdCookie.ToString()));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
 
             if (String.IsNullOrEmpty(((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Name")).Text))
             {
@@ -29,16 +28,16 @@ namespace VerbatimWeb
                 ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("Description")).Text = Deck.Description;
                 ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("TextBoxAuthor")).Text = Deck.Author;
                 ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("TextBoxIDToken")).Text = Deck.IdentifiyngToken;
-                ((RadioButtonList)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("RadioDistribution")).SelectedIndex = Deck.UseStandardDistribution ? 0 : 1;
+                ((RadioButtonList)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("RadioDistribution")).SelectedIndex = Deck.UseStandardDistribution ? 1 : 0;
+                ((TextBox)this.Master.FindControl("MainContent").FindControl("EditDeckFormView").Controls[0].Controls[1].Controls[0].FindControl("TextBoxLanguage")).Text = Deck.Language;
             }
 
         }
         public void UpdateDeck(Deck Deck)
         {
-            string DeckIdCookieString = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
-            if (string.IsNullOrEmpty(DeckIdCookieString))
+            if (Request.QueryString["DeckId"] == null)
                 Response.Redirect("Default");
-            Deck.VerbatimDeckId = Int32.Parse(DeckIdCookieString.ToString());
+            Deck.VerbatimDeckId = Int32.Parse(Request.QueryString["DeckId"]);
             if (string.IsNullOrEmpty(Deck.IdentifiyngToken))
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
@@ -61,6 +60,12 @@ namespace VerbatimWeb
             {
                 ScriptManager.RegisterClientScriptBlock(this, GetType(),
                             "alertMessage", @"alert('" + "Name is required!" + "')", true);
+                return;
+            }
+            if (string.IsNullOrEmpty(Deck.Language))
+            {
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Language is required!" + "')", true);
                 return;
             }
             string QueryURL = Utilities.ServerDNS + "/GetAllDecks";
@@ -90,10 +95,6 @@ namespace VerbatimWeb
             using (var client = new System.Net.WebClient())
             {
                 byte[] response = client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Deck)));
-                HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-                DeckIdCookie.Values.Add("VerbatimDeckId", client.Encoding.GetString(response));
-                DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-                Response.Cookies.Add(DeckIdCookie);
             }
 
             Response.Redirect("DeckDetails.aspx?DeckId=" + Deck.VerbatimDeckId);

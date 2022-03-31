@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
@@ -122,6 +123,10 @@ namespace VerbatimService
         void RefreshAccessToken(string SteamId, string ServerPassword);
 
         #endregion
+
+        [OperationContract]
+        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, UriTemplate = "vip?s={s}")]
+        string vip(string s);
     }
 
 

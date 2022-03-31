@@ -16,31 +16,31 @@ namespace VerbatimDDL
         static void Main(string[] args)
         {
 
-            StreamReader reader = new StreamReader("C:\\Users\\rjg42\\a.TSV");
-            string Line = "";
+            //StreamReader reader = new StreamReader("C:\\Users\\rjg42\\a.TSV");
+            //string Line = "";
 
-            while ((Line = reader.ReadLine()) != null)
-            {
+            //while ((Line = reader.ReadLine()) != null)
+            //{
 
-                List<string> LineValues = new List<string>();
-                LineValues = Line.Split('\t').ToList();
+            //    List<string> LineValues = new List<string>();
+            //    LineValues = Line.Split('\t').ToList();
                 
-                //LineValues = Regex.Split(Line, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)").ToList();
-                string Title = LineValues[0].ToString();
-                string Description = LineValues[1].ToString();
-                string Category = LineValues[2].ToString();
-                int PointValue = Int32.Parse(LineValues[3].ToString());
-                string PictureURL;
-                if (LineValues.Count > 4 && LineValues[4] != null)
-                    PictureURL = LineValues[4].ToString();
+            //    //LineValues = Regex.Split(Line, ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)").ToList();
+            //    string Title = LineValues[0].ToString();
+            //    string Description = LineValues[1].ToString();
+            //    string Category = LineValues[2].ToString();
+            //    int PointValue = Int32.Parse(LineValues[3].ToString());
+            //    string PictureURL;
+            //    if (LineValues.Count > 4 && LineValues[4] != null)
+            //        PictureURL = LineValues[4].ToString();
 
-            }
-            reader.Close();
+            //}
+            //reader.Close();
 
             SQLiteConnection Connection = new SQLiteConnection("Data Source=" + "E" + @":\Verbatim\Verbatim.sqlite;Version=3;");
             Connection.Open();
 
-            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
 
             //SQLiteCommand.CommandText = @"SELECT SteamID, count(*)  FROM VerbatimCardPlayHistory
             //                                INNER join VerbatimCard on VerbatimCard.VerbatimCardId = VerbatimCardPlayHistory.VerbatimCardId
@@ -55,7 +55,7 @@ namespace VerbatimDDL
             //    }
             //}
 
-            //SQLiteCommand.CommandText = @"UPDATE VerbatimDeck SET VerbatimDeckID = 1 WHERE VerbatimDeckID = 28 ";
+            //SQLiteCommand.CommandText = @"UPDATE VerbatimDeck SET Language = 'Korean' WHERE VerbatimDeckId IN (70,75,77,78,79,80,82,83,84,86,87,90,91,92,93,94,95,96,97,99,100,102,103,105,106,107,109,110,112,115,117,119,121,122,123,127,129,130,133,137,138,141,144,145,146,147,152,153,157,165,170,171,172,173)";
             //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand = new SQLiteCommand(Connection);
@@ -67,9 +67,9 @@ namespace VerbatimDDL
             //SQLiteCommand.CommandText = @"ALTER TABLE VerbatimCard ADD PictureURL TEXT ";
             //SQLiteCommand.ExecuteNonQuery();
 
-            SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
-            SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,30), (76561198245719610,27),(76561198245719610,47)";
-            SQLiteCommand.ExecuteNonQuery();
+            //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
+            //SQLiteCommand.CommandText = @"INSERT INTO DeckAccess (SteamID, VerbatimDeckId) VALUES (76561198245719610,30), (76561198245719610,27),(76561198245719610,47)";
+            //SQLiteCommand.ExecuteNonQuery();
 
             //SQLiteCommand SQLiteCommand = new SQLiteCommand(Connection);
             //SQLiteCommand.CommandText = @"CREATE TABLE Session (SessionId INTEGER PRIMARY KEY, SteamID TEXT NOT NULL, AccessToken TEXT, CreatedDate INT NOT NULL, ExpiryDate INT NOT NULL)";
@@ -155,14 +155,14 @@ namespace VerbatimDDL
             //    }
 
             //export vanilla deck to CSV quotes are escaped as ""
-            //SQLiteCommand.CommandText = @"Select * from VerbatimCard where VerbatimDeckId = 1";
-            //using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
-            //{
-            //    while (SQLiteDataReader.Read())
-            //    {
-            //        File.AppendAllText(@"E:\Verbatim\test\DeckForHael2.csv", "\"" + SQLiteDataReader.GetInt32(0) + "\",\"" + SQLiteDataReader.GetInt32(1) + "\",\"" + SQLiteDataReader.GetString(2).Replace("\n", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(3).Replace("\n", "").Replace("\r", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(4).Replace("\n", "") + "\",\"" + SQLiteDataReader.GetInt32(5) + "\",\"" + SQLiteDataReader.GetValue(6).ToString().Replace("\n", "") + "\"\n");
-            //    }
-            //}
+            SQLiteCommand.CommandText = @"Select * from VerbatimCard where VerbatimDeckId = 1";
+            using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
+            {
+                while (SQLiteDataReader.Read())
+                {
+                    File.AppendAllText(@"E:\Verbatim\test\DeckForHael5.csv", "\"" + SQLiteDataReader.GetInt32(0) + "\",\"" + SQLiteDataReader.GetInt32(1) + "\",\"" + SQLiteDataReader.GetString(2).Replace("\n", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(3).Replace("\n", "").Replace("\r", "").Replace("\"", "\"\"") + "\",\"" + SQLiteDataReader.GetString(4).Replace("\n", "") + "\",\"" + SQLiteDataReader.GetInt32(5) + "\",\"" + SQLiteDataReader.GetValue(6).ToString().Replace("\n", "") + "\"\n");
+                }
+            }
         }
     }
 }

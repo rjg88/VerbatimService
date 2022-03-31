@@ -59,11 +59,8 @@ namespace VerbatimWeb
             Author.Text = HttpUtility.HtmlEncode(Deck.Author);
             Token.Text = HttpUtility.HtmlEncode(Deck.IdentifiyngToken);
             TotalCards.Text = Deck.TotalCards.ToString();
-            Distribution.Text = Deck.UseStandardDistribution ? "Standard" : "Random" ; 
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
+            Distribution.Text = Deck.UseStandardDistribution ? "Standard" : "Random";
+            Language.Text = Deck.Language;
 
             double[] yValues = { Deck.OnePointTotalCards, Deck.TwoPointTotalCards, Deck.ThreePointTotalCards, Deck.FourPointTotalCards, Deck.FivePointTotalCards};
             string[] xValues = { "1", "2", "3", "4", "5" };
@@ -83,56 +80,36 @@ namespace VerbatimWeb
         }
         protected void ButtonViewCards_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
-            Response.Redirect("DeckCardsView.aspx", false);
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
+            Response.Redirect("DeckCardsView.aspx?DeckId=" + Deck.VerbatimDeckId.ToString(), false);
         }
 
         protected void ButtonEditCards_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
-            Response.Redirect("DeckCardsEdit.aspx", false);
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
+            Response.Redirect("DeckCardsEdit.aspx?DeckId=" + Deck.VerbatimDeckId.ToString(), false);
 
         }
         protected void ButtonExcelUpload_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
 
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
-            Response.Redirect("ExcelUploader.aspx", false);
+            Response.Redirect("ExcelUploader.aspx?DeckId=" + Deck.VerbatimDeckId.ToString(), false);
 
         }
 
         protected void ButtonEdit_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
 
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
-            Response.Redirect("EditDeck.aspx", false);
+            Response.Redirect("EditDeck.aspx?DeckId=" + Deck.VerbatimDeckId.ToString(), false);
 
         }
         protected void ButtonDelete_Click(object sender, EventArgs e)
         {
-            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString()));
+            Deck Deck = JsonConvert.DeserializeObject<Deck>(Utilities.MakeGETRequest(Utilities.ServerDNS + "/GetDeck/" + Request.QueryString["DeckId"]));
 
-            HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-            DeckIdCookie.Values.Add("VerbatimDeckId", Deck.VerbatimDeckId.ToString());
-            DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-            Response.Cookies.Add(DeckIdCookie);
-            Response.Redirect("DeleteDeck.aspx", false);
+            Response.Redirect("DeleteDeck.aspx?DeckId=" + Deck.VerbatimDeckId.ToString(), false);
 
         }
     }

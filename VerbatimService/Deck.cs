@@ -23,6 +23,9 @@ namespace VerbatimService
         public string Password { get; set; }
         [DataMember]
         public bool UseStandardDistribution { get; set; }
+        
+        [DataMember]
+        public string Language { get; set; }
 
         [DataMember]
         public int TotalCards{ get; set; }

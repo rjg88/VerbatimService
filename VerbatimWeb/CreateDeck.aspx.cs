@@ -61,6 +61,12 @@ namespace VerbatimWeb
                             "alertMessage", @"alert('" + "Name is required!" + "')", true);
                 return;
             }
+            if (string.IsNullOrEmpty(Deck.Language))
+            {
+                ScriptManager.RegisterClientScriptBlock(this, GetType(),
+                            "alertMessage", @"alert('" + "Language is required!" + "')", true);
+                return;
+            }
             string QueryURL = Utilities.ServerDNS + "/GetAllDecks";
 
             List<Deck> Decks = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Deck>>(Utilities.MakeGETRequest(QueryURL));
@@ -82,17 +88,15 @@ namespace VerbatimWeb
             }
 
             QueryURL = Utilities.ServerDNS + "/InsertDeck";
-
+            string DeckId = "";
             using (var client = new System.Net.WebClient())
             {
                 byte[] response = client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Deck)));
-                HttpCookie DeckIdCookie = new HttpCookie("VerbatimDeckId");
-                DeckIdCookie.Values.Add("VerbatimDeckId", client.Encoding.GetString(response));
-                DeckIdCookie.Expires = DateTime.Now.AddHours(24);
-                Response.Cookies.Add(DeckIdCookie);
+                DeckId = client.Encoding.GetString(response);
             }
 
-            Response.Redirect("DeckCardsEdit.aspx");
+            Response.Redirect("DeckCardsEdit.aspx?DeckId=" + DeckId, false);
+
 
         }
     }

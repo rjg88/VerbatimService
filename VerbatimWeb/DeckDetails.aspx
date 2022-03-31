@@ -25,11 +25,13 @@
 								<h2><b>Author:</b>&nbsp;<asp:Label runat="server" Id="Author"></asp:Label></h2>
 							</div>
 							<br />
+							<div class="panel-body">
+								<h2><b>Language:</b>&nbsp;<asp:Label runat="server" Id="Language"></asp:Label></h2>
+							</div>
 							<br />
                             <div class="panel-body">
 								<h2><b>Point Distribution:</b>&nbsp;<asp:Label runat="server" Id="Distribution"></asp:Label></h2>
 							</div>
-							<br />
 							<br />
                             <div class="panel-body">
 								<h2><b>Total Cards:</b>&nbsp;<asp:Label runat="server" Id="TotalCards"></asp:Label></h2>

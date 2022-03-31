@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VerbatimWeb {
-    
-    
-    public partial class DeckDetails {
-        
+namespace VerbatimWeb
+{
+
+
+    public partial class DeckDetails
+    {
+
         /// <summary>
         /// Name control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Name;
-        
+
         /// <summary>
         /// Description control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Description;
-        
+
         /// <summary>
         /// Token control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Token;
-        
+
         /// <summary>
         /// Author control.
         /// </summary>
@@ -47,7 +49,16 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Author;
-        
+
+        /// <summary>
+        /// Language control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Language;
+
         /// <summary>
         /// Distribution control.
         /// </summary>
@@ -56,7 +67,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Distribution;
-        
+
         /// <summary>
         /// TotalCards control.
         /// </summary>
@@ -65,7 +76,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label TotalCards;
-        
+
         /// <summary>
         /// Chart1 control.
         /// </summary>
@@ -74,7 +85,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.DataVisualization.Charting.Chart Chart1;
-        
+
         /// <summary>
         /// ButtonViewCards control.
         /// </summary>
@@ -83,7 +94,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ButtonViewCards;
-        
+
         /// <summary>
         /// ButtonEditCards control.
         /// </summary>
@@ -92,7 +103,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ButtonEditCards;
-        
+
         /// <summary>
         /// ButtonExcelClick control.
         /// </summary>
@@ -101,7 +112,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ButtonExcelClick;
-        
+
         /// <summary>
         /// ButtonEditDeck control.
         /// </summary>
@@ -110,7 +121,7 @@ namespace VerbatimWeb {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ButtonEditDeck;
-        
+
         /// <summary>
         /// ButtonDeleteDeck control.
         /// </summary>

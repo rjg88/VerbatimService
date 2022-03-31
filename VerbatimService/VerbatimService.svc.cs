@@ -4,10 +4,12 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace VerbatimService
 {
@@ -177,15 +179,22 @@ namespace VerbatimService
 
         public Stream RenderCard(string CardId)
         {
-            Initialize();
-            ImageProcessing.Initialize();
-            Card Card = GetCard(CardId);
+            try
+            {
+                Initialize();
+                ImageProcessing.Initialize();
+                Card Card = GetCard(CardId);
 
-            Bitmap bmp = ImageProcessing.GenerateImage(Card);
-            MemoryStream ms = new MemoryStream();
-            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            ms.Position = 0;  //This's a very important
-            return ms;
+                Bitmap bmp = ImageProcessing.GenerateImage(Card);
+                MemoryStream ms = new MemoryStream();
+                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                ms.Position = 0;  //This's a very important
+                return ms;
+            }
+            catch (Exception e)
+            {
+                return new MemoryStream(Encoding.UTF8.GetBytes(e.Message + e.StackTrace));
+            }
         }
 
         public void DeleteCardPlayHistories(List<string> SteamIDs, List<int> CardIDs)
@@ -196,11 +205,18 @@ namespace VerbatimService
 
         public string CreateSession(string SteamId, string ServerPassword)
         {
-            Initialize();
-            if (ServerPassword == "PlatypusServerToken35_cgYjqa*345gfdr")
-                return Persistence.CreateSession(SteamId);
-            else
-                return "";
+            try
+            {
+                Initialize();
+                if (ServerPassword == "PlatypusServerToken35_cgYjqa*345gfdr")
+                    return Persistence.CreateSession(SteamId);
+                else
+                    return "";
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public bool VerfiySession(string AccessToken)
@@ -220,6 +236,30 @@ namespace VerbatimService
             Initialize();
             if (ServerPassword == "PlatypusServerToken35_cgYjqa*345gfdr")
                 Persistence.RefreshAccessToken(SteamId);
+        }
+
+        public string vip(string s)
+        {
+            List<string> o = new List<string>();
+            int i = 1, j = 1, k = 1, l = s.Length;
+            for (; i < l; i++)
+                for (j = 1; j < l; j++)
+                    for (k = 1; k < l; k++)
+                    {
+                        try
+                        {
+                            string t = s.Insert(i, ".").Insert(j, ".").Insert(k, ".");
+                            t = Regex.Replace(t, "[.]0[0-9]", "!");
+                            IPAddress.Parse(t);
+                            o.Add(t);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+            o = o.Distinct().ToList();
+            return String.Join(",", o.Select(x => x.ToString()).ToArray());
         }
     }
 }

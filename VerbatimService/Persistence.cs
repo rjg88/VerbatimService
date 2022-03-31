@@ -47,7 +47,8 @@ namespace VerbatimService
                                Description = :Description,
                                Author = :Author,
                                IdentifiyngToken = :IdentifiyngToken,
-                               UseStandardDistribution = :UseStandardDistribution
+                               UseStandardDistribution = :UseStandardDistribution,
+                               Language = :Language
                          WHERE VerbatimDeckId = :VerbatimDeckId";
             SQLiteCommand.Parameters.Add("Name", DbType.String).Value = Deck.Name;
             SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Deck.Description;
@@ -55,6 +56,7 @@ namespace VerbatimService
             SQLiteCommand.Parameters.Add("IdentifiyngToken", DbType.String).Value = Deck.IdentifiyngToken;
             SQLiteCommand.Parameters.Add("VerbatimDeckId", DbType.String).Value = Deck.VerbatimDeckId;
             SQLiteCommand.Parameters.Add("UseStandardDistribution", DbType.String).Value = Deck.UseStandardDistribution;
+            SQLiteCommand.Parameters.Add("Language", DbType.String).Value = Deck.Language;
             SQLiteCommand.ExecuteNonQuery();
         }
 
@@ -63,7 +65,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             Deck Deck = new Deck();
-            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end), sum(case when pointvalue = 5 then 1 else 0 end) 
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.VerbatimDeckId, Name, VerbatimDeck.Description, Author, IdentifiyngToken, UseStandardDistribution, COUNT(*), sum(case when pointvalue = 1 then 1 else 0 end), sum(case when pointvalue = 2 then 1 else 0 end), sum(case when pointvalue = 3 then 1 else 0 end), sum(case when pointvalue = 4 then 1 else 0 end), sum(case when pointvalue = 5 then 1 else 0 end), Language
                         FROM VerbatimDeck  
                         LEFT JOIN VerbatimCard ON VerbatimCard.VerbatimDeckId = VerbatimDeck.VerbatimDeckId 					                        
                         WHERE VerbatimDeck.VerbatimDeckId = :VerbatimDeckId";
@@ -83,7 +85,8 @@ namespace VerbatimService
                     Deck.TwoPointTotalCards = SQLiteDataReader.GetInt32(8);
                     Deck.ThreePointTotalCards = SQLiteDataReader.GetInt32(9);
                     Deck.FourPointTotalCards = SQLiteDataReader.GetInt32(10);
-                    Deck.FivePointTotalCards = SQLiteDataReader.GetInt32(10);
+                    Deck.FivePointTotalCards = SQLiteDataReader.GetInt32(11);
+                    Deck.Language = SQLiteDataReader.GetString(12);
                 }
             }
             return Deck;
@@ -118,10 +121,10 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             List<Deck> Decks = new List<Deck>();
-            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken, VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId, COUNT(*)
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken, VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId, VerbatimDeck.Language, COUNT(*)
                         FROM VerbatimDeck
                         LEFT JOIN VerbatimCard ON VerbatimCard.VerbatimDeckId = VerbatimDeck.VerbatimDeckId
-                        GROUP BY VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken,VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId";
+                        GROUP BY VerbatimDeck.Name, VerbatimDeck.Description, VerbatimDeck.Author, VerbatimDeck.IdentifiyngToken,VerbatimDeck.UseStandardDistribution, VerbatimDeck.VerbatimDeckId, VerbatimDeck.Language";
             using (SQLiteDataReader SQLiteDataReader = SQLiteCommand.ExecuteReader())
             {
                 while (SQLiteDataReader.Read())
@@ -133,7 +136,8 @@ namespace VerbatimService
                     Deck.IdentifiyngToken = SQLiteDataReader.GetString(3);
                     Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(4));
                     Deck.VerbatimDeckId = SQLiteDataReader.GetInt32(5);
-                    Deck.TotalCards = SQLiteDataReader.GetInt32(6);
+                    Deck.Language = SQLiteDataReader.GetString(6);
+                    Deck.TotalCards = SQLiteDataReader.GetInt32(7);
                     Decks.Add(Deck);
                 }
             }
@@ -180,7 +184,7 @@ namespace VerbatimService
             SQLiteCommand = new SQLiteCommand(Connection);
 
             List<Deck> FoundDecks = new List<Deck>();
-            SQLiteCommand.CommandText = @"SELECT VerbatimDeckId, Name, Description, Author, IdentifiyngToken, UseStandardDistribution
+            SQLiteCommand.CommandText = @"SELECT VerbatimDeckId, Name, Description, Author, IdentifiyngToken, UseStandardDistribution, Language
                         FROM VerbatimDeck
                         WHERE Name like @Query
                         ORDER BY Name";
@@ -196,6 +200,7 @@ namespace VerbatimService
                     Deck.Author = SQLiteDataReader.GetString(3);
                     Deck.IdentifiyngToken = SQLiteDataReader.GetString(4);
                     Deck.UseStandardDistribution = bool.Parse(SQLiteDataReader.GetString(5));
+                    Deck.Language = SQLiteDataReader.GetString(6);
                     FoundDecks.Add(Deck);
 
                 }
@@ -222,14 +227,15 @@ namespace VerbatimService
         {
             SQLiteCommand = new SQLiteCommand(Connection);
 
-            SQLiteCommand.CommandText = @"INSERT INTO VerbatimDeck (Name, Description, Author, IdentifiyngToken, UseStandardDistribution)
-                        VALUES (:Name,:Description,:Author,:IdentifiyngToken,:UseStandardDistribution)";
+            SQLiteCommand.CommandText = @"INSERT INTO VerbatimDeck (Name, Description, Author, IdentifiyngToken, UseStandardDistribution, Language)
+                        VALUES (:Name,:Description,:Author,:IdentifiyngToken,:UseStandardDistribution,:Language)";
 
             SQLiteCommand.Parameters.Add("Name", DbType.String).Value = Deck.Name;
             SQLiteCommand.Parameters.Add("Description", DbType.String).Value = Deck.Description;
             SQLiteCommand.Parameters.Add("Author", DbType.String).Value = Deck.Author;
             SQLiteCommand.Parameters.Add("IdentifiyngToken", DbType.String).Value = Deck.IdentifiyngToken;
             SQLiteCommand.Parameters.Add("UseStandardDistribution", DbType.String).Value = Deck.UseStandardDistribution;
+            SQLiteCommand.Parameters.Add("Language", DbType.String).Value = Deck.Language;
 
             SQLiteCommand.ExecuteNonQuery();
 

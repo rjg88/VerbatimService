@@ -26,7 +26,8 @@ namespace VerbatimService
         private static Image TemplateImage4;
         private static Image TemplateImage5;
         private static List<Bitmap> CardImages = new List<Bitmap>();
-        private static List<float> Distribution = new List<float> { 0.25f, 0.4f, 0.25f, 0.05f, 0.05f };
+        //2021 private static List<float> Distribution = new List<float> { 0.25f, 0.4f, 0.25f, 0.05f, 0.05f };
+        private static List<float> Distribution = new List<float> { 0.15f, 0.45f, 0.35f, 0.03f, 0.02f };
         public SQLiteConnection Connection;
         private int UnixTimeStamp;
         public static string DriveLetter;
@@ -379,9 +380,8 @@ namespace VerbatimService
 
         private static List<int> FixDistribution(List<float> Distribution, int DeckSize)
         {
-            // 25%, 40%, 25%, 10%
-
-            // 5 8 5 2
+ 
+            // 5 8 5 1 1
 
             // FLOOR ALL 
             // SAVE FLOORS
@@ -493,7 +493,7 @@ namespace VerbatimService
                 for (int i = 0; i < ranges.Length; i++)
                 {
                     Rectangle WordBounds = Rectangle.Round(regions[i].GetBounds(g));
-                    File.AppendAllText(@"C:\Verbatim\test.txt", WordBounds.X + " " + WordBounds.Y + "\n");
+                    //File.AppendAllText(@"C:\Verbatim\test.txt", WordBounds.X + " " + WordBounds.Y + "\n");
                     string word = words.Substring(ranges[i].First, ranges[i].Length);
                     if (RedWords.Contains(word.ToLower().Trim(SpecialCharacters.ToArray())))
                         TextRenderer.DrawText(g, word, StringFontDesc, WordBounds, Color.Red, flags);

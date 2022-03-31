@@ -23,16 +23,15 @@ namespace VerbatimWeb
                 myCookie.Expires = DateTime.Now.AddHours(-1);
                 Response.Cookies.Add(myCookie); Response.Redirect("Default");
             }
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
+            if (Request.QueryString["DeckId"] == null)
                 Response.Redirect("Default");
             //DeckCardsGridView.DataBind();
-            
+
             DropDownList DropDownCategory = (DropDownList)this.Master.FindControl("MainContent").FindControl("InsertCardFormView").Controls[0].Controls[1].Controls[0].FindControl("AddNewCategorySection").FindControl("DropDownListCategory");
 
             if (DropDownCategory.Items.Count < 2)
             {
-                string QueryURL = Utilities.ServerDNS + "/GetDeckCategories/" + Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"].ToString();
+                string QueryURL = Utilities.ServerDNS + "/GetDeckCategories/" + Request.QueryString["DeckId"];
                 List<string> Categories = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(Utilities.MakeGETRequest(QueryURL));
 
                 foreach (string Category in Categories)
@@ -43,7 +42,7 @@ namespace VerbatimWeb
         protected void ButtonFilter_Click(object sender, EventArgs e)
         {
 
-            string QueryURL = "DeckCardsEdit.aspx?filter=" + FilterInputBox.Text;
+            string QueryURL = "DeckCardsEdit.aspx?DeckId=" + Request.QueryString["DeckId"] + "&filter=" + FilterInputBox.Text;
 
             Response.Redirect(QueryURL, false);
         }
@@ -63,11 +62,8 @@ namespace VerbatimWeb
         }
         public IQueryable<Card> LoadDeckCards([QueryString("Filter")]string Filter)
         {
-            object DeckIdCookie = Request.Cookies["VerbatimDeckId"].Values["VerbatimDeckId"];
-            if (DeckIdCookie == null || string.IsNullOrEmpty(DeckIdCookie.ToString()))
-                return null;
+            string DeckId = Request.QueryString["DeckId"];
 
-            string DeckId = DeckIdCookie.ToString();
             if (Filter == null)
                 Filter = "";
             string QueryURL = Utilities.ServerDNS + "/GetDeckCards/" + DeckId + "?filter=" + Filter;
@@ -157,7 +153,7 @@ namespace VerbatimWeb
             {
                 client.UploadData(QueryURL, "PUT", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(Card)));
             }
-            Response.Redirect("DeckCardsEdit.aspx?Filter=" + Title, false);
+            Response.Redirect("DeckCardsEdit.aspx?DeckId=" + Request.QueryString["DeckId"], false);
 
         }
         protected void DeckCardsGridView_RowCreated(object sender, GridViewRowEventArgs e)
